@@ -1,7 +1,17 @@
 import axios from 'axios';
 import { Business, Review, User, Tip, Checkin, SearchFilters } from '../types/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://192.168.0.123:8000';
+// Environment-aware API URL configuration
+const getApiBaseUrl = () => {
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  
+  // Development fallback
+  return 'http://192.168.0.123:8000';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,

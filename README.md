@@ -1,14 +1,65 @@
-# Yelp Data FastAPI Backend
+# Yelp Data Full-Stack Application
 
-A FastAPI backend for querying data from five tables in a Yelp PostgreSQL database.
+A complete full-stack application with FastAPI backend and React frontend for querying real Yelp data from PostgreSQL database.
 
-## Features
+## 🌟 Features
 
-- **Businesses**: Query business data with filtering by city and star rating
-- **Reviews**: Get reviews with filtering by business and user
-- **Users**: Access user information
+### Backend (FastAPI)
+- **Businesses**: Query 150K+ businesses with filtering by city and star rating
+- **Reviews**: Access 6.9M+ reviews with filtering by business and user
+- **Users**: Browse 1.9M+ user profiles
 - **Tips**: Query tips with filtering by business and user
 - **Checkins**: Access check-in data by business
+- **RESTful API**: Complete CRUD operations with automatic documentation
+
+### Frontend (React + TypeScript)
+- **Business Search**: Search and filter businesses with modern UI
+- **Review Browser**: Browse reviews with pagination and filtering
+- **Responsive Design**: Mobile-friendly interface
+- **Real-time Data**: Connected to live backend API
+
+## 🚀 Quick Start
+
+### Local Development
+```bash
+# Backend
+source yelp-fastapi/bin/activate
+uvicorn src.main:app --host 192.168.0.123 --port 8000 --reload
+
+# Frontend  
+cd frontend
+yarn start
+```
+
+### AWS Deployment (Production)
+```bash
+# One-command deployment
+./deploy-complete.sh
+```
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   React App     │    │   FastAPI       │    │   PostgreSQL    │
+│   (Frontend)    │───▶│   (Backend)     │───▶│   (Database)    │
+│   S3/CloudFront │    │   Fargate/ECS   │    │   RDS           │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+## 💰 Hosting Costs
+
+| Option | Monthly Cost | Features |
+|--------|-------------|----------|
+| **AWS Standard** | $25-35 | Full production setup with ALB |
+| **AWS Budget** | $15-25 | Direct Fargate access |
+| **AWS Ultra-Budget** | $8-15 | Lambda + RDS (serverless) |
+
+## 📚 Documentation
+
+- [Complete AWS Deployment Guide](AWS_DEPLOYMENT_GUIDE.md)
+- [API Documentation](http://localhost:8000/docs) (when running locally)
+- [Frontend Demo](http://localhost:3000) (when running locally)
 
 ## Project Structure
 
