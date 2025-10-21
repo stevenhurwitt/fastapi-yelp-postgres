@@ -1,12 +1,17 @@
 [project]
 name = "fastapi-yelp-postgres"
 version = "0.1.0"
-description = "Add your description here"
+description = "fast api for yelp data stored in postgres"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "asyncpg>=0.30.0",
-    "fastapi>=0.119.1",
+    "fastapi[all]>=0.119.1",
     "psycopg2>=2.9.11",
+    "psycopg2-binary>=2.9.11",
+    "pydantic>=2.12.3",
+    "pydantic-settings>=2.11.0",
+    "python-multipart>=0.0.20",
     "sqlalchemy>=2.0.44",
+    "uvicorn[standard]>=0.38.0",
 ]

@@ -23,7 +23,7 @@ def check_schema():
                 ORDER BY table_name;
             """))
             
-            print("📋 Tables in database:")
+            print("Tables in database:")
             tables = []
             for row in tables_result:
                 table_name = row[0]
@@ -34,7 +34,7 @@ def check_schema():
             
             # Check columns for each table
             for table in tables:
-                print(f"\n📊 Columns in '{table}' table:")
+                print(f"\n Columns in '{table}' table:")
                 columns_result = connection.execute(text(f"""
                     SELECT column_name, data_type, is_nullable
                     FROM information_schema.columns 
@@ -53,9 +53,9 @@ def check_schema():
                 print(f"   📈 Rows: {count:,}")
                     
     except Exception as e:
-        print(f"❌ Error checking schema: {e}")
+        print(f"Error checking schema: {e}")
 
 if __name__ == "__main__":
-    print("🔍 Checking actual database schema...")
+    print("Checking actual database schema...")
     print("=" * 60)
     check_schema()
