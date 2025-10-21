@@ -13,23 +13,32 @@ A FastAPI backend for querying data from five tables in a Yelp PostgreSQL databa
 ## Project Structure
 
 ```
-src/
-├── main.py                 # Main FastAPI application
-├── api/                    # API route handlers
-│   ├── business_routes.py  # Business endpoints
-│   ├── review_routes.py    # Review endpoints
-│   ├── user_routes.py      # User endpoints
-│   ├── tip_routes.py       # Tip endpoints
-│   └── checkin_routes.py   # Checkin endpoints
-├── core/
-│   └── config.py          # Application configuration
-├── crud/
-│   └── crud.py            # Database operations
-├── db/
-│   ├── database.py        # Database connection
-│   └── models.py          # SQLAlchemy models
-└── schemas/
-    └── schemas.py         # Pydantic schemas
+├── src/                    # FastAPI Backend
+│   ├── main.py                 # Main FastAPI application
+│   ├── api/                    # API route handlers
+│   │   ├── business_routes.py  # Business endpoints
+│   │   ├── review_routes.py    # Review endpoints
+│   │   ├── user_routes.py      # User endpoints
+│   │   ├── tip_routes.py       # Tip endpoints
+│   │   └── checkin_routes.py   # Checkin endpoints
+│   ├── core/
+│   │   └── config.py          # Application configuration
+│   ├── crud/
+│   │   └── crud.py            # Database operations
+│   ├── db/
+│   │   ├── database.py        # Database connection
+│   │   └── models.py          # SQLAlchemy models
+│   └── schemas/
+│       └── schemas.py         # Pydantic schemas
+├── frontend/               # React Frontend
+│   ├── src/
+│   │   ├── components/         # React components
+│   │   ├── services/           # API service layer
+│   │   ├── types/              # TypeScript definitions
+│   │   └── App.tsx             # Main app component
+│   ├── public/
+│   └── package.json
+└── requirements.txt        # Python dependencies
 ```
 
 ## Setup
@@ -52,14 +61,23 @@ DATABASE_PASSWORD=your_password
 DATABASE_NAME=your_database
 ```
 
-3. **Run the application:**
+3. **Run the backend:**
 ```bash
 # Using uvicorn directly
-uvicorn src.main:app --reload
+uvicorn src.main:app --reload --host 192.168.0.123 --port 8000
 
 # Or using the run script
 python run.py
 ```
+
+4. **Run the frontend (optional):**
+```bash
+cd frontend
+npm install
+npm start
+```
+
+The frontend will be available at `http://localhost:3000`
 
 ## API Endpoints
 
@@ -97,6 +115,28 @@ Most list endpoints support pagination:
 - `limit`: Maximum number of records to return (default: 100)
 
 Example: `GET /api/v1/businesses/?skip=0&limit=50`
+
+## Frontend Features
+
+The React frontend provides:
+- **Business Explorer**: Search and filter businesses by city and rating
+- **Review Browser**: Browse reviews with engagement metrics
+- **Responsive Design**: Works on desktop and mobile
+- **Real-time Data**: Live connection to the FastAPI backend
+- **Modern UI**: Clean, intuitive interface with loading states
+
+### Frontend Screenshots
+- Business grid with search filters
+- Review cards with star ratings and engagement
+- Responsive mobile design
+- Interactive pagination
+
+## Interactive Documentation
+
+Once the server is running, visit:
+- **API Documentation**: http://192.168.0.123:8000/docs
+- **Alternative Docs**: http://192.168.0.123:8000/redoc
+- **Frontend App**: http://localhost:3000 (when running frontend)
 
 ## Interactive Documentation
 
