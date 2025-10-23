@@ -7,18 +7,56 @@ const getApiBaseUrl = () => {
     return process.env.REACT_APP_API_URL;
   }
   
-  // Development fallback
-  return 'http://192.168.0.123:8000';
+  // Development fallback - Updated to match your Raspberry Pi IP
+  return 'http://192.168.0.9:8000';
 };
 
 const API_BASE_URL = getApiBaseUrl();
+
+// Debug logging
+console.log('🌐 API Configuration:');
+console.log('   REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+console.log('   Final API_BASE_URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 10000, // 10 second timeout
 });
+
+// Add request interceptor for debugging
+api.interceptors.request.use(
+  (config) => {
+    console.log('🚀 Making API request to:', config.url);
+    console.log('🔗 Full URL:', `${config.baseURL}${config.url}`);
+    return config;
+  },
+  (error) => {
+    console.error('❌ Request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for debugging
+api.interceptors.response.use(
+  (response) => {
+    console.log('✅ API response:', response.status, response.data?.length || 'N/A', 'items');
+    return response;
+  },
+  (error) => {
+    console.error('❌ API Error:', error.message);
+    if (error.response) {
+      console.error('📊 Error details:', {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        data: error.response.data
+      });
+    }
+    return Promise.reject(error);
+  }
+);
 
 export class YelpApiService {
   // Business endpoints

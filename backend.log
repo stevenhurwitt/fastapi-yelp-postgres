@@ -1,0 +1,92 @@
+INFO:     Will watch for changes in these directories: ['/home/steven/fastapi-yelp-postgres']
+INFO:     Uvicorn running on http://192.168.0.9:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [135504] using WatchFiles
+INFO:     Started server process [135512]
+INFO:     Waiting for application startup.
+2025-10-22 23:14:57,543 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2025-10-22 23:14:57,544 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-10-22 23:14:57,547 INFO sqlalchemy.engine.Engine select current_schema()
+2025-10-22 23:14:57,547 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-10-22 23:14:57,551 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2025-10-22 23:14:57,552 INFO sqlalchemy.engine.Engine [raw sql] {}
+2025-10-22 23:14:57,554 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-10-22 23:14:57,569 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-22 23:14:57,569 INFO sqlalchemy.engine.Engine [generated in 0.00082s] {'table_name': 'business', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-22 23:14:57,575 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-22 23:14:57,576 INFO sqlalchemy.engine.Engine [cached since 0.007964s ago] {'table_name': 'reviews', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-22 23:14:57,579 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-22 23:14:57,580 INFO sqlalchemy.engine.Engine [cached since 0.01156s ago] {'table_name': 'yelp_users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-22 23:14:57,584 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-22 23:14:57,586 INFO sqlalchemy.engine.Engine [cached since 0.01647s ago] {'table_name': 'tips', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-22 23:14:57,590 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-22 23:14:57,590 INFO sqlalchemy.engine.Engine [cached since 0.02183s ago] {'table_name': 'checkins', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-22 23:14:57,595 INFO sqlalchemy.engine.Engine COMMIT
+INFO:     Application startup complete.
+INFO:     192.168.0.123:52936 - "GET /health HTTP/1.1" 200 OK
+INFO:     192.168.0.123:52936 - "GET /health HTTP/1.1" 200 OK
+2025-10-22 23:15:07,885 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-10-22 23:15:07,897 INFO sqlalchemy.engine.Engine SELECT business.business_id AS business_business_id, business.name AS business_name, business.address AS business_address, business.city AS business_city, business.state AS business_state, business.postal_code AS business_postal_code, business.latitude AS business_latitude, business.longitude AS business_longitude, business.stars AS business_stars, business.review_count AS business_review_count, business.is_open AS business_is_open, business.attributes AS business_attributes, business.categories AS business_categories, business.hours AS business_hours 
+FROM business 
+ LIMIT %(param_1)s OFFSET %(param_2)s
+2025-10-22 23:15:07,897 INFO sqlalchemy.engine.Engine [generated in 0.00066s] {'param_1': 5, 'param_2': 0}
+INFO:     192.168.0.123:52937 - "GET /api/v1/businesses/?limit=5 HTTP/1.1" 200 OK
+2025-10-22 23:15:07,906 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-10-22 23:15:07,937 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-10-22 23:15:07,949 INFO sqlalchemy.engine.Engine SELECT reviews.review_id AS reviews_review_id, reviews.user_id AS reviews_user_id, reviews.business_id AS reviews_business_id, reviews.stars AS reviews_stars, reviews.useful AS reviews_useful, reviews.funny AS reviews_funny, reviews.cool AS reviews_cool, reviews.text AS reviews_text, reviews.date AS reviews_date, reviews.year AS reviews_year, reviews.month AS reviews_month 
+FROM reviews 
+ LIMIT %(param_1)s OFFSET %(param_2)s
+2025-10-22 23:15:07,950 INFO sqlalchemy.engine.Engine [generated in 0.00092s] {'param_1': 5, 'param_2': 0}
+INFO:     192.168.0.123:52937 - "GET /api/v1/reviews/?limit=5 HTTP/1.1" 200 OK
+2025-10-22 23:15:07,958 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-10-22 23:15:08,054 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-10-22 23:15:08,055 INFO sqlalchemy.engine.Engine SELECT business.business_id AS business_business_id, business.name AS business_name, business.address AS business_address, business.city AS business_city, business.state AS business_state, business.postal_code AS business_postal_code, business.latitude AS business_latitude, business.longitude AS business_longitude, business.stars AS business_stars, business.review_count AS business_review_count, business.is_open AS business_is_open, business.attributes AS business_attributes, business.categories AS business_categories, business.hours AS business_hours 
+FROM business 
+ LIMIT %(param_1)s OFFSET %(param_2)s
+2025-10-22 23:15:08,055 INFO sqlalchemy.engine.Engine [cached since 0.1586s ago] {'param_1': 5, 'param_2': 0}
+INFO:     192.168.0.123:52936 - "GET /api/v1/businesses/?limit=5 HTTP/1.1" 200 OK
+2025-10-22 23:15:08,061 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-10-22 23:15:08,075 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-10-22 23:15:08,076 INFO sqlalchemy.engine.Engine SELECT reviews.review_id AS reviews_review_id, reviews.user_id AS reviews_user_id, reviews.business_id AS reviews_business_id, reviews.stars AS reviews_stars, reviews.useful AS reviews_useful, reviews.funny AS reviews_funny, reviews.cool AS reviews_cool, reviews.text AS reviews_text, reviews.date AS reviews_date, reviews.year AS reviews_year, reviews.month AS reviews_month 
+FROM reviews 
+ LIMIT %(param_1)s OFFSET %(param_2)s
+2025-10-22 23:15:08,076 INFO sqlalchemy.engine.Engine [cached since 0.1276s ago] {'param_1': 5, 'param_2': 0}
+INFO:     192.168.0.123:52936 - "GET /api/v1/reviews/?limit=5 HTTP/1.1" 200 OK
+2025-10-22 23:15:08,082 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-10-22 23:15:09,967 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-10-22 23:15:09,968 INFO sqlalchemy.engine.Engine SELECT business.business_id AS business_business_id, business.name AS business_name, business.address AS business_address, business.city AS business_city, business.state AS business_state, business.postal_code AS business_postal_code, business.latitude AS business_latitude, business.longitude AS business_longitude, business.stars AS business_stars, business.review_count AS business_review_count, business.is_open AS business_is_open, business.attributes AS business_attributes, business.categories AS business_categories, business.hours AS business_hours 
+FROM business 
+ LIMIT %(param_1)s OFFSET %(param_2)s
+2025-10-22 23:15:09,968 INFO sqlalchemy.engine.Engine [cached since 2.072s ago] {'param_1': 20, 'param_2': 0}
+INFO:     192.168.0.123:52936 - "GET /api/v1/businesses/?limit=20 HTTP/1.1" 200 OK
+2025-10-22 23:15:09,978 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-10-22 23:15:09,987 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-10-22 23:15:09,988 INFO sqlalchemy.engine.Engine SELECT business.business_id AS business_business_id, business.name AS business_name, business.address AS business_address, business.city AS business_city, business.state AS business_state, business.postal_code AS business_postal_code, business.latitude AS business_latitude, business.longitude AS business_longitude, business.stars AS business_stars, business.review_count AS business_review_count, business.is_open AS business_is_open, business.attributes AS business_attributes, business.categories AS business_categories, business.hours AS business_hours 
+FROM business 
+ LIMIT %(param_1)s OFFSET %(param_2)s
+2025-10-22 23:15:09,990 INFO sqlalchemy.engine.Engine [cached since 2.092s ago] {'param_1': 20, 'param_2': 0}
+INFO:     192.168.0.123:52937 - "GET /api/v1/businesses/?limit=20 HTTP/1.1" 200 OK
+2025-10-22 23:15:10,001 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-10-22 23:15:15,018 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-10-22 23:15:15,019 INFO sqlalchemy.engine.Engine SELECT reviews.review_id AS reviews_review_id, reviews.user_id AS reviews_user_id, reviews.business_id AS reviews_business_id, reviews.stars AS reviews_stars, reviews.useful AS reviews_useful, reviews.funny AS reviews_funny, reviews.cool AS reviews_cool, reviews.text AS reviews_text, reviews.date AS reviews_date, reviews.year AS reviews_year, reviews.month AS reviews_month 
+FROM reviews 
+ LIMIT %(param_1)s OFFSET %(param_2)s
+2025-10-22 23:15:15,020 INFO sqlalchemy.engine.Engine [cached since 7.071s ago] {'param_1': 10, 'param_2': 0}
+INFO:     192.168.0.123:52973 - "GET /api/v1/reviews/?limit=10 HTTP/1.1" 200 OK
+2025-10-22 23:15:15,029 INFO sqlalchemy.engine.Engine ROLLBACK
+2025-10-22 23:15:15,045 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-10-22 23:15:15,046 INFO sqlalchemy.engine.Engine SELECT reviews.review_id AS reviews_review_id, reviews.user_id AS reviews_user_id, reviews.business_id AS reviews_business_id, reviews.stars AS reviews_stars, reviews.useful AS reviews_useful, reviews.funny AS reviews_funny, reviews.cool AS reviews_cool, reviews.text AS reviews_text, reviews.date AS reviews_date, reviews.year AS reviews_year, reviews.month AS reviews_month 
+FROM reviews 
+ LIMIT %(param_1)s OFFSET %(param_2)s
+2025-10-22 23:15:15,046 INFO sqlalchemy.engine.Engine [cached since 7.098s ago] {'param_1': 10, 'param_2': 0}
+INFO:     192.168.0.123:52973 - "GET /api/v1/reviews/?limit=10 HTTP/1.1" 200 OK
+2025-10-22 23:15:15,055 INFO sqlalchemy.engine.Engine ROLLBACK

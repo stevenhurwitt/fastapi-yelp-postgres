@@ -1,0 +1,17 @@
+[Unit]
+Description=FastAPI Yelp Application
+After=network.target postgresql.service
+
+[Service]
+Type=exec
+User=steven
+Group=steven
+WorkingDirectory=/home/steven/fastapi-yelp-postgres
+Environment=PATH=/home/steven/fastapi-yelp-postgres/.venv/bin
+EnvironmentFile=/home/steven/fastapi-yelp-postgres/.env
+ExecStart=/home/steven/fastapi-yelp-postgres/.venv/bin/uvicorn src.main:app --host 192.168.0.9 --port 8000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

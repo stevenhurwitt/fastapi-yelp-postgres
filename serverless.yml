@@ -12,18 +12,18 @@ provider:
     DATABASE_USER: ${env:DATABASE_USER}
     DATABASE_PASSWORD: ${env:DATABASE_PASSWORD}
   
-  vpc:
-    securityGroupIds:
-      - sg-xxxxx  # Your database security group
-    subnetIds:
-      - subnet-xxxxx  # Your private subnet 1
-      - subnet-yyyyy  # Your private subnet 2
+  # vpc:
+  #   securityGroupIds:
+  #     - sg-xxxxx  # Your database security group
+  #   subnetIds:
+  #     - subnet-xxxxx  # Your private subnet 1
+  #     - subnet-yyyyy  # Your private subnet 2
 
 functions:
   api:
     handler: src.lambda_handler.handler
     timeout: 30
-    memory: 512
+    memorySize: 512
     events:
       - http:
           path: /{proxy+}
@@ -34,14 +34,7 @@ functions:
           method: ANY
           cors: true
 
-plugins:
-  - serverless-python-requirements
-  - serverless-wsgi
-
 custom:
-  wsgi:
-    app: src.main.app
-    packRequirements: false
   pythonRequirements:
     dockerizePip: true
     pythonBin: python3.11
