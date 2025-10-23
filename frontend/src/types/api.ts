@@ -27,6 +27,8 @@ export interface Review {
   date?: string;
   year?: number;
   month?: number;
+  user_name?: string;    // Added user name
+  business_name?: string; // Added business name
 }
 
 export interface User {

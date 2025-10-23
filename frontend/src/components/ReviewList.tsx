@@ -31,6 +31,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ businessId, userId }) => {
       } else if (userId) {
         data = await YelpApiService.getReviewsByUser(userId, filters);
       } else {
+        // The regular reviews endpoint now includes user and business names
         data = await YelpApiService.getReviews(filters);
       }
       
@@ -90,8 +91,17 @@ const ReviewList: React.FC<ReviewListProps> = ({ businessId, userId }) => {
               {truncateText(review.text)}
             </div>
             <div className="review-meta">
-              <small>User ID: {review.user_id}</small>
-              {!businessId && <small> | Business ID: {review.business_id}</small>}
+              {review.user_name ? (
+                <small>By: {review.user_name}</small>
+              ) : (
+                <small>User ID: {review.user_id}</small>
+              )}
+              {!businessId && review.business_name && (
+                <small> | Business: {review.business_name}</small>
+              )}
+              {!businessId && !review.business_name && (
+                <small> | Business ID: {review.business_id}</small>
+              )}
             </div>
           </div>
         ))}

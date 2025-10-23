@@ -41,6 +41,13 @@ class Review(ReviewBase):
     class Config:
         from_attributes = True
 
+class ReviewWithNames(ReviewBase):
+    user_name: Optional[str] = None
+    business_name: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
 # User schemas
 class UserBase(BaseModel):
     user_id: str

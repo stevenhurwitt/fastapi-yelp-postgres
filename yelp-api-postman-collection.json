@@ -1,0 +1,349 @@
+{
+  "info": {
+    "name": "Yelp Data API - Complete Collection",
+    "description": "Complete API collection for Yelp database with all endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://192.168.0.9:8000",
+      "type": "string",
+      "description": "Base URL for the Yelp API"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔧 System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check if the API is healthy and responding"
+          }
+        },
+        {
+          "name": "Root Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            },
+            "description": "Get API welcome message and version info"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏢 Businesses",
+      "item": [
+        {
+          "name": "Get All Businesses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/businesses/?skip=0&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "businesses", ""],
+              "query": [
+                {"key": "skip", "value": "0", "description": "Number of records to skip"},
+                {"key": "limit", "value": "10", "description": "Maximum number of records to return"}
+              ]
+            },
+            "description": "Get paginated list of all businesses"
+          }
+        },
+        {
+          "name": "Get Business by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/businesses/MTSW4McQd7CbVtyjqoe9mw",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "businesses", "MTSW4McQd7CbVtyjqoe9mw"]
+            },
+            "description": "Get specific business by its ID"
+          }
+        },
+        {
+          "name": "Get Businesses by City",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/businesses/city/Philadelphia?skip=0&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "businesses", "city", "Philadelphia"],
+              "query": [
+                {"key": "skip", "value": "0"},
+                {"key": "limit", "value": "10"}
+              ]
+            },
+            "description": "Get businesses filtered by city name"
+          }
+        },
+        {
+          "name": "Get High-Rated Businesses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/businesses/stars/4.0?skip=0&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "businesses", "stars", "4.0"],
+              "query": [
+                {"key": "skip", "value": "0"},
+                {"key": "limit", "value": "10"}
+              ]
+            },
+            "description": "Get businesses with minimum star rating"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📝 Reviews",
+      "item": [
+        {
+          "name": "Get All Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reviews/?skip=0&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "reviews", ""],
+              "query": [
+                {"key": "skip", "value": "0"},
+                {"key": "limit", "value": "10"}
+              ]
+            },
+            "description": "Get paginated list of all reviews"
+          }
+        },
+        {
+          "name": "Get Review by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reviews/pRZnVSr4W9VZtHvjR8aC_w",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "reviews", "pRZnVSr4W9VZtHvjR8aC_w"]
+            },
+            "description": "Get specific review by its ID"
+          }
+        },
+        {
+          "name": "Get Reviews for Business",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reviews/business/MTSW4McQd7CbVtyjqoe9mw?skip=0&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "reviews", "business", "MTSW4McQd7CbVtyjqoe9mw"],
+              "query": [
+                {"key": "skip", "value": "0"},
+                {"key": "limit", "value": "5"}
+              ]
+            },
+            "description": "Get all reviews for a specific business"
+          }
+        },
+        {
+          "name": "Get Reviews by User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reviews/user/0urKTv7A-mQnd7GqX7mwEA?skip=0&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "reviews", "user", "0urKTv7A-mQnd7GqX7mwEA"],
+              "query": [
+                {"key": "skip", "value": "0"},
+                {"key": "limit", "value": "5"}
+              ]
+            },
+            "description": "Get all reviews written by a specific user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/?skip=0&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", ""],
+              "query": [
+                {"key": "skip", "value": "0"},
+                {"key": "limit", "value": "10"}
+              ]
+            },
+            "description": "Get paginated list of all users"
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/0urKTv7A-mQnd7GqX7mwEA",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "0urKTv7A-mQnd7GqX7mwEA"]
+            },
+            "description": "Get specific user by their ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "💡 Tips",
+      "item": [
+        {
+          "name": "Get All Tips",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/tips/?skip=0&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "tips", ""],
+              "query": [
+                {"key": "skip", "value": "0"},
+                {"key": "limit", "value": "10"}
+              ]
+            },
+            "description": "Get paginated list of all tips"
+          }
+        },
+        {
+          "name": "Get Tips for Business",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/tips/business/MTSW4McQd7CbVtyjqoe9mw?skip=0&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "tips", "business", "MTSW4McQd7CbVtyjqoe9mw"],
+              "query": [
+                {"key": "skip", "value": "0"},
+                {"key": "limit", "value": "5"}
+              ]
+            },
+            "description": "Get all tips for a specific business"
+          }
+        },
+        {
+          "name": "Get Tips by User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/tips/user/0urKTv7A-mQnd7GqX7mwEA?skip=0&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "tips", "user", "0urKTv7A-mQnd7GqX7mwEA"],
+              "query": [
+                {"key": "skip", "value": "0"},
+                {"key": "limit", "value": "5"}
+              ]
+            },
+            "description": "Get all tips written by a specific user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "✅ Checkins",
+      "item": [
+        {
+          "name": "Get All Checkins",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/checkins/?skip=0&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "checkins", ""],
+              "query": [
+                {"key": "skip", "value": "0"},
+                {"key": "limit", "value": "10"}
+              ]
+            },
+            "description": "Get paginated list of all checkins"
+          }
+        },
+        {
+          "name": "Get Checkins for Business",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/checkins/business/MTSW4McQd7CbVtyjqoe9mw?skip=0&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "checkins", "business", "MTSW4McQd7CbVtyjqoe9mw"],
+              "query": [
+                {"key": "skip", "value": "0"},
+                {"key": "limit", "value": "5"}
+              ]
+            },
+            "description": "Get all checkins for a specific business"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Pre-request script for all requests",
+          "console.log('Making request to:', pm.request.url.toString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Test script for all requests",
+          "pm.test('Status code is 200', function () {",
+          "    pm.response.to.have.status(200);",
+          "});",
+          "",
+          "pm.test('Response time is less than 2000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});",
+          "",
+          "pm.test('Response has JSON content-type', function () {",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});"
+        ]
+      }
+    }
+  ]
+}

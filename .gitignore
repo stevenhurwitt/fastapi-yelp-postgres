@@ -41,3 +41,6 @@ yarn-error.log*
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+frontend/frontend.log
+backend.log
