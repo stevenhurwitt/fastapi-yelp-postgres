@@ -64,7 +64,12 @@ const ReviewList: React.FC<ReviewListProps> = ({ businessId, userId }) => {
   };
 
   if (loading && reviews.length === 0) {
-    return <div className="loading">Loading reviews...</div>;
+    return (
+      <div className="loading">
+        <p>Loading reviews...</p>
+        <p><small>⏳ Large datasets may take 1-2 minutes to load</small></p>
+      </div>
+    );
   }
 
   return (

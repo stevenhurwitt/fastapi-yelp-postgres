@@ -3,7 +3,13 @@ import { Business, Review, User, Tip, Checkin, SearchFilters } from '../types/ap
 
 // Environment-aware API URL configuration
 const getApiBaseUrl = () => {
+  // Check for environment variable first
   if (process.env.REACT_APP_API_URL) {
+    // If it's the placeholder AWS URL, use local instead
+    if (process.env.REACT_APP_API_URL.includes('your-load-balancer-dns')) {
+      console.warn('⚠️ Using placeholder AWS URL, falling back to local Raspberry Pi');
+      return 'http://192.168.0.9:8000';
+    }
     return process.env.REACT_APP_API_URL;
   }
   
@@ -23,7 +29,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // 10 second timeout
+  timeout: 300000, // 5 minute timeout for large datasets
 });
 
 // Add request interceptor for debugging
@@ -42,11 +48,18 @@ api.interceptors.request.use(
 // Add response interceptor for debugging
 api.interceptors.response.use(
   (response) => {
-    console.log('✅ API response:', response.status, response.data?.length || 'N/A', 'items');
+    const itemCount = Array.isArray(response.data) ? response.data.length : 'N/A';
+    console.log('✅ API response:', response.status, itemCount, 'items');
+    if (response.config.url?.includes('reviews') && typeof itemCount === 'number' && itemCount > 0) {
+      console.log('🎉 Reviews loaded successfully!', itemCount, 'reviews received');
+    }
     return response;
   },
   (error) => {
     console.error('❌ API Error:', error.message);
+    if (error.code === 'ECONNABORTED') {
+      console.error('⏰ Request timed out - API is taking longer than expected');
+    }
     if (error.response) {
       console.error('📊 Error details:', {
         status: error.response.status,

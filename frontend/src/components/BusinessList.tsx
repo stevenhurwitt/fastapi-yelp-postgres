@@ -65,7 +65,12 @@ const BusinessList: React.FC = () => {
   };
 
   if (loading && businesses.length === 0) {
-    return <div className="loading">Loading businesses...</div>;
+    return (
+      <div className="loading">
+        <p>Loading businesses...</p>
+        <p><small>⏳ Large datasets may take 1-2 minutes to load</small></p>
+      </div>
+    );
   }
 
   return (
