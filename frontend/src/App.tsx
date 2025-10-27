@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import BusinessList from './components/BusinessList';
 import ReviewList from './components/ReviewList';
+import UserList from './components/UserList';
 import ApiTest from './components/ApiTest';
 import './App.css';
 
@@ -51,12 +52,7 @@ function App() {
         {activeTab === 'debug' && <ApiTest />}
         {activeTab === 'businesses' && <BusinessList />}
         {activeTab === 'reviews' && <ReviewList />}
-        {activeTab === 'users' && (
-          <div className="coming-soon">
-            <h2>Users</h2>
-            <p>User explorer coming soon...</p>
-          </div>
-        )}
+        {activeTab === 'users' && <UserList />}
         {activeTab === 'tips' && (
           <div className="coming-soon">
             <h2>Tips</h2>

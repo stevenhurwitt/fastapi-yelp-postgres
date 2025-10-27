@@ -312,4 +312,129 @@
     flex-direction: column;
     align-items: flex-start;
   }
+  
+  .user-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* User List Styles */
+.user-list {
+  max-width: 100%;
+}
+
+.user-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.user-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #667eea;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.user-header {
+  margin-bottom: 1rem;
+}
+
+.user-header h3 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.user-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.review-count {
+  font-weight: bold;
+  color: #667eea;
+}
+
+.avg-stars {
+  color: #f59e0b;
+  font-size: 0.9rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.yelping-since {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.fans {
+  color: #dc2626;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.engagement-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+.engagement-stats span {
+  padding: 0.25rem 0.5rem;
+  background: #f3f4f6;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+.useful {
+  border-left: 3px solid #10b981;
+}
+
+.funny {
+  border-left: 3px solid #f59e0b;
+}
+
+.cool {
+  border-left: 3px solid #3b82f6;
+}
+
+.elite-badge {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.compliments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.compliment-badge {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  border: 1px solid #c7d2fe;
 }
