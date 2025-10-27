@@ -18,52 +18,29 @@ def get_businesses_by_stars(db: Session, min_stars: float, skip: int = 0, limit:
 
 # Review CRUD operations
 def get_reviews(db: Session, skip: int = 0, limit: int = 100) -> List[models.Review]:
-    # Use a conservative limit for large datasets
-    safe_limit = min(limit, 20)
-    return db.query(models.Review).order_by(models.Review.date.desc()).offset(skip).limit(safe_limit).all()
-
-def get_reviews_simple_with_names(db: Session, skip: int = 0, limit: int = 100):
-    """Fallback function - get reviews with minimal joins for performance"""
-    safe_limit = min(limit, 5)  # Very small limit for testing
-    
-    return db.query(
-        models.Review.review_id,
-        models.Review.user_id, 
-        models.Review.business_id,
-        models.Review.stars,
-        models.Review.text,
-        models.Review.date
-    ).order_by(models.Review.date.desc()).offset(skip).limit(safe_limit).all()
+    return db.query(models.Review).offset(skip).limit(limit).all()
 
 def get_reviews_with_names(db: Session, skip: int = 0, limit: int = 100):
-    """Get reviews with user and business names - ultra-optimized for large datasets"""
-    # Very conservative limit to prevent memory issues
-    safe_limit = min(limit, 10)  # Reduced to 10 for large datasets
-    
-    # Use subquery to limit before joining to reduce memory usage
-    review_subquery = db.query(models.Review).order_by(
-        models.Review.date.desc()
-    ).offset(skip).limit(safe_limit).subquery()
-    
+    """Get reviews with user and business names"""
     return db.query(
-        review_subquery.c.review_id,
-        review_subquery.c.user_id,
-        review_subquery.c.business_id,
-        review_subquery.c.stars,
-        review_subquery.c.useful,
-        review_subquery.c.funny,
-        review_subquery.c.cool,
-        review_subquery.c.text,
-        review_subquery.c.date,
-        review_subquery.c.year,
-        review_subquery.c.month,
+        models.Review.review_id,
+        models.Review.user_id,
+        models.Review.business_id,
+        models.Review.stars,
+        models.Review.useful,
+        models.Review.funny,
+        models.Review.cool,
+        models.Review.text,
+        models.Review.date,
+        models.Review.year,
+        models.Review.month,
         models.User.name.label('user_name'),
         models.Business.name.label('business_name')
-    ).select_from(review_subquery).join(
-        models.User, review_subquery.c.user_id == models.User.user_id, isouter=True
     ).join(
-        models.Business, review_subquery.c.business_id == models.Business.business_id, isouter=True
-    ).all()
+        models.User, models.Review.user_id == models.User.user_id, isouter=True
+    ).join(
+        models.Business, models.Review.business_id == models.Business.business_id, isouter=True
+    ).offset(skip).limit(limit).all()
 
 def get_review(db: Session, review_id: str) -> Optional[models.Review]:
     return db.query(models.Review).filter(models.Review.review_id == review_id).first()
@@ -94,65 +71,51 @@ def get_reviews_by_business(db: Session, business_id: str, skip: int = 0, limit:
     return db.query(models.Review).filter(models.Review.business_id == business_id).offset(skip).limit(limit).all()
 
 def get_reviews_by_business_with_names(db: Session, business_id: str, skip: int = 0, limit: int = 100):
-    """Get reviews for a business with user and business names - ultra-optimized"""
-    safe_limit = min(limit, 10)  # Very conservative limit
-    
-    # Filter first, then join to minimize data processing
-    review_subquery = db.query(models.Review).filter(
-        models.Review.business_id == business_id
-    ).order_by(models.Review.date.desc()).offset(skip).limit(safe_limit).subquery()
-    
+    """Get reviews for a business with user and business names"""
     return db.query(
-        review_subquery.c.review_id,
-        review_subquery.c.user_id,
-        review_subquery.c.business_id,
-        review_subquery.c.stars,
-        review_subquery.c.useful,
-        review_subquery.c.funny,
-        review_subquery.c.cool,
-        review_subquery.c.text,
-        review_subquery.c.date,
-        review_subquery.c.year,
-        review_subquery.c.month,
+        models.Review.review_id,
+        models.Review.user_id,
+        models.Review.business_id,
+        models.Review.stars,
+        models.Review.useful,
+        models.Review.funny,
+        models.Review.cool,
+        models.Review.text,
+        models.Review.date,
+        models.Review.year,
+        models.Review.month,
         models.User.name.label('user_name'),
         models.Business.name.label('business_name')
-    ).select_from(review_subquery).join(
-        models.User, review_subquery.c.user_id == models.User.user_id, isouter=True
     ).join(
-        models.Business, review_subquery.c.business_id == models.Business.business_id, isouter=True
-    ).all()
+        models.User, models.Review.user_id == models.User.user_id, isouter=True
+    ).join(
+        models.Business, models.Review.business_id == models.Business.business_id, isouter=True
+    ).filter(models.Review.business_id == business_id).offset(skip).limit(limit).all()
 
 def get_reviews_by_user(db: Session, user_id: str, skip: int = 0, limit: int = 100) -> List[models.Review]:
     return db.query(models.Review).filter(models.Review.user_id == user_id).offset(skip).limit(limit).all()
 
 def get_reviews_by_user_with_names(db: Session, user_id: str, skip: int = 0, limit: int = 100):
-    """Get reviews by a user with user and business names - ultra-optimized"""
-    safe_limit = min(limit, 10)  # Very conservative limit
-    
-    # Filter first, then join to minimize data processing
-    review_subquery = db.query(models.Review).filter(
-        models.Review.user_id == user_id
-    ).order_by(models.Review.date.desc()).offset(skip).limit(safe_limit).subquery()
-    
+    """Get reviews by a user with user and business names"""
     return db.query(
-        review_subquery.c.review_id,
-        review_subquery.c.user_id,
-        review_subquery.c.business_id,
-        review_subquery.c.stars,
-        review_subquery.c.useful,
-        review_subquery.c.funny,
-        review_subquery.c.cool,
-        review_subquery.c.text,
-        review_subquery.c.date,
-        review_subquery.c.year,
-        review_subquery.c.month,
+        models.Review.review_id,
+        models.Review.user_id,
+        models.Review.business_id,
+        models.Review.stars,
+        models.Review.useful,
+        models.Review.funny,
+        models.Review.cool,
+        models.Review.text,
+        models.Review.date,
+        models.Review.year,
+        models.Review.month,
         models.User.name.label('user_name'),
         models.Business.name.label('business_name')
-    ).select_from(review_subquery).join(
-        models.User, review_subquery.c.user_id == models.User.user_id, isouter=True
     ).join(
-        models.Business, review_subquery.c.business_id == models.Business.business_id, isouter=True
-    ).all()
+        models.User, models.Review.user_id == models.User.user_id, isouter=True
+    ).join(
+        models.Business, models.Review.business_id == models.Business.business_id, isouter=True
+    ).filter(models.Review.user_id == user_id).offset(skip).limit(limit).all()
 
 # User CRUD operations
 def get_users(db: Session, skip: int = 0, limit: int = 100) -> List[models.User]:
@@ -176,6 +139,66 @@ def get_tips_by_business(db: Session, business_id: str, skip: int = 0, limit: in
 
 def get_tips_by_user(db: Session, user_id: str, skip: int = 0, limit: int = 100) -> List[models.Tip]:
     return db.query(models.Tip).filter(models.Tip.user_id == user_id).offset(skip).limit(limit).all()
+
+# Enhanced tip CRUD operations with names
+def get_tips_with_names(db: Session, skip: int = 0, limit: int = 100):
+    """Get tips with user and business names - optimized for performance"""
+    safe_limit = min(limit, 50)  # Conservative limit for tips
+    
+    return db.query(
+        models.Tip.user_id,
+        models.Tip.business_id,
+        models.Tip.text,
+        models.Tip.date,
+        models.Tip.compliment_count,
+        models.Tip.year,
+        models.User.name.label('user_name'),
+        models.Business.name.label('business_name')
+    ).select_from(models.Tip)\
+     .outerjoin(models.User, models.Tip.user_id == models.User.user_id)\
+     .outerjoin(models.Business, models.Tip.business_id == models.Business.business_id)\
+     .order_by(models.Tip.date.desc())\
+     .offset(skip).limit(safe_limit).all()
+
+def get_tips_by_business_with_names(db: Session, business_id: str, skip: int = 0, limit: int = 100):
+    """Get tips by business with user and business names - optimized"""
+    safe_limit = min(limit, 25)  # Very conservative for business-specific queries
+    
+    return db.query(
+        models.Tip.user_id,
+        models.Tip.business_id,
+        models.Tip.text,
+        models.Tip.date,
+        models.Tip.compliment_count,
+        models.Tip.year,
+        models.User.name.label('user_name'),
+        models.Business.name.label('business_name')
+    ).select_from(models.Tip)\
+     .outerjoin(models.User, models.Tip.user_id == models.User.user_id)\
+     .outerjoin(models.Business, models.Tip.business_id == models.Business.business_id)\
+     .filter(models.Tip.business_id == business_id)\
+     .order_by(models.Tip.date.desc())\
+     .offset(skip).limit(safe_limit).all()
+
+def get_tips_by_user_with_names(db: Session, user_id: str, skip: int = 0, limit: int = 100):
+    """Get tips by user with user and business names - optimized"""
+    safe_limit = min(limit, 25)  # Very conservative for user-specific queries
+    
+    return db.query(
+        models.Tip.user_id,
+        models.Tip.business_id,
+        models.Tip.text,
+        models.Tip.date,
+        models.Tip.compliment_count,
+        models.Tip.year,
+        models.User.name.label('user_name'),
+        models.Business.name.label('business_name')
+    ).select_from(models.Tip)\
+     .outerjoin(models.User, models.Tip.user_id == models.User.user_id)\
+     .outerjoin(models.Business, models.Tip.business_id == models.Business.business_id)\
+     .filter(models.Tip.user_id == user_id)\
+     .order_by(models.Tip.date.desc())\
+     .offset(skip).limit(safe_limit).all()
 
 # Checkin CRUD operations
 def get_checkins(db: Session, skip: int = 0, limit: int = 100) -> List[models.Checkin]:

@@ -63,6 +63,8 @@ export interface Tip {
   date?: string;
   compliment_count?: number;
   year?: number;
+  user_name?: string;    // Added user name
+  business_name?: string; // Added business name
 }
 
 export interface Checkin {

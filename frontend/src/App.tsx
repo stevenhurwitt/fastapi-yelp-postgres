@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import BusinessList from './components/BusinessList';
 import ReviewList from './components/ReviewList';
 import UserList from './components/UserList';
+import TipList from './components/TipList';
 import ApiTest from './components/ApiTest';
 import './App.css';
 
@@ -53,12 +54,7 @@ function App() {
         {activeTab === 'businesses' && <BusinessList />}
         {activeTab === 'reviews' && <ReviewList />}
         {activeTab === 'users' && <UserList />}
-        {activeTab === 'tips' && (
-          <div className="coming-soon">
-            <h2>Tips</h2>
-            <p>Tips explorer coming soon...</p>
-          </div>
-        )}
+        {activeTab === 'tips' && <TipList />}
       </main>
 
       <footer className="App-footer">

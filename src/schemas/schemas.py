@@ -90,6 +90,13 @@ class Tip(TipBase):
     class Config:
         from_attributes = True
 
+class TipWithNames(TipBase):
+    user_name: Optional[str] = None
+    business_name: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
 # Checkin schemas
 class CheckinBase(BaseModel):
     business_id: str
