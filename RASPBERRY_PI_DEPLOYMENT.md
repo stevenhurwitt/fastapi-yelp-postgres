@@ -131,12 +131,23 @@ sudo systemctl status yelp-api.service
 ### Option C: Using Docker
 
 ```bash
+# Stop any existing backend processes first
+pkill -f "uvicorn.*src.main:app" || true
+
 # Build and run with Docker Compose (uses existing database)
 docker-compose -f docker-compose.local.yml up -d
 
 # View logs
-docker-compose logs -f
+docker-compose -f docker-compose.local.yml logs -f
+
+# Check status
+docker-compose -f docker-compose.local.yml ps
+
+# Stop the container
+docker-compose -f docker-compose.local.yml down
 ```
+
+**Note**: The Docker setup uses `network_mode: host` to connect to your existing PostgreSQL database on port 5433. Make sure no other processes are using port 8000 before starting.
 
 ## 🌐 Making It Accessible from Outside Your Network
 
