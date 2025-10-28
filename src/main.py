@@ -19,11 +19,14 @@ app.add_middleware(
         "http://localhost:3000",
         "http://127.0.0.1:3000", 
         "http://192.168.0.9:3000",
-        "*"  # Allow all origins for development
+        "http://192.168.0.9:3000/",  # With trailing slash
+        "http://localhost:3000/",    # With trailing slash
+        "http://127.0.0.1:3000/"     # With trailing slash
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"]  # Expose all headers to the frontend
 )
 
 # Include routers

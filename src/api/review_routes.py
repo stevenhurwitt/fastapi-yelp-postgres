@@ -19,53 +19,24 @@ def get_db():
 @router.get("/", response_model=List[schemas.ReviewWithNames])
 def read_reviews(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """Get all reviews with pagination, including user and business names"""
-    try:
-        # Try the optimized query with names
-        reviews = crud.get_reviews_with_names(db, skip=skip, limit=min(limit, 10))
-        return [
-            schemas.ReviewWithNames(
-                review_id=r.review_id,
-                user_id=r.user_id,
-                business_id=r.business_id,
-                stars=r.stars,
-                useful=r.useful,
-                funny=r.funny,
-                cool=r.cool,
-                text=r.text,
-                date=r.date,
-                year=r.year,
-                month=r.month,
-                user_name=getattr(r, 'user_name', None),
-                business_name=getattr(r, 'business_name', None)
-            ) for r in reviews
-        ]
-    except Exception as e:
-        # Fallback to simple reviews without names if complex query fails
-        print(f"Complex query failed, using fallback: {e}")
-        simple_reviews = crud.get_reviews(db, skip=skip, limit=min(limit, 5))
-        return [
-            schemas.ReviewWithNames(
-                review_id=r.review_id,
-                user_id=r.user_id,
-                business_id=r.business_id,
-                stars=r.stars,
-                useful=r.useful,
-                funny=r.funny,
-                cool=r.cool,
-                text=r.text,
-                date=r.date,
-                year=r.year,
-                month=r.month,
-                user_name=None,  # No names in fallback
-                business_name=None
-            ) for r in simple_reviews
-        ]
-
-@router.get("/simple", response_model=List[schemas.Review])
-def read_reviews_simple(skip: int = 0, limit: int = 5, db: Session = Depends(get_db)):
-    """Get simple reviews without joins - fast fallback endpoint"""
-    reviews = crud.get_reviews(db, skip=skip, limit=limit)
-    return reviews
+    reviews = crud.get_reviews_with_names(db, skip=skip, limit=limit)
+    return [
+        schemas.ReviewWithNames(
+            review_id=r.review_id,
+            user_id=r.user_id,
+            business_id=r.business_id,
+            stars=r.stars,
+            useful=r.useful,
+            funny=r.funny,
+            cool=r.cool,
+            text=r.text,
+            date=r.date,
+            year=r.year,
+            month=r.month,
+            user_name=r.user_name,
+            business_name=r.business_name
+        ) for r in reviews
+    ]
 
 @router.get("/{review_id}", response_model=schemas.ReviewWithNames)
 def read_review(review_id: str, db: Session = Depends(get_db)):
