@@ -105,6 +105,15 @@ export class YelpApiService {
     return response.data;
   }
 
+  static async getBusinessesByState(state: string, filters?: SearchFilters): Promise<Business[]> {
+    const params = new URLSearchParams();
+    if (filters?.skip) params.append('skip', filters.skip.toString());
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    
+    const response = await api.get(`/api/v1/businesses/state/${encodeURIComponent(state)}?${params}`);
+    return response.data;
+  }
+
   // Review endpoints
   static async getReviews(filters?: SearchFilters): Promise<Review[]> {
     const params = new URLSearchParams();

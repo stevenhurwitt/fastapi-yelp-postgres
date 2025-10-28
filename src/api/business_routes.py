@@ -41,3 +41,9 @@ def read_businesses_by_stars(min_stars: float, skip: int = 0, limit: int = 100, 
     """Get businesses with minimum star rating"""
     businesses = crud.get_businesses_by_stars(db, min_stars=min_stars, skip=skip, limit=limit)
     return businesses
+
+@router.get("/state/{state}", response_model=List[schemas.Business])
+def read_businesses_by_state(state: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """Get businesses by state"""
+    businesses = crud.get_businesses_by_state(db, state=state, skip=skip, limit=limit)
+    return businesses

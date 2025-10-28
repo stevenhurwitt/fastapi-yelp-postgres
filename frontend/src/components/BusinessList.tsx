@@ -11,6 +11,7 @@ const BusinessList: React.FC = () => {
     limit: 20
   });
   const [city, setCity] = useState('');
+  const [state, setState] = useState('');
   const [minStars, setMinStars] = useState<number | ''>('');
 
   useEffect(() => {
@@ -25,6 +26,8 @@ const BusinessList: React.FC = () => {
       
       if (city) {
         data = await YelpApiService.getBusinessesByCity(city, filters);
+      } else if (state) {
+        data = await YelpApiService.getBusinessesByState(state, filters);
       } else if (minStars !== '') {
         data = await YelpApiService.getBusinessesByStars(Number(minStars), filters);
       } else {
@@ -46,6 +49,7 @@ const BusinessList: React.FC = () => {
 
   const handleClearFilters = () => {
     setCity('');
+    setState('');
     setMinStars('');
     setFilters({ skip: 0, limit: 20 });
   };
@@ -83,6 +87,12 @@ const BusinessList: React.FC = () => {
             placeholder="Search by city"
             value={city}
             onChange={(e) => setCity(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Search by state"
+            value={state}
+            onChange={(e) => setState(e.target.value)}
           />
           <input
             type="number"
