@@ -1,12 +1,54 @@
 # 🍓 Raspberry Pi Deployment Guide
 
-## ✅ Backend Deployment (COMPLETED)
+## ✅ Backend Deployment
 
-Your FastAPI backend is now running successfully!
+### Starting the Backend API
 
+```bash
+# Navigate to project directory
+cd /home/steven/fastapi-yelp-postgres
+
+# Activate the virtual environment
+source .venv/bin/activate
+
+# Start the FastAPI backend server
+uvicorn src.main:app --host 192.168.0.9 --port 8000 --reload
+
+# Alternative: Start in background with nohup
+# nohup uvicorn src.main:app --host 192.168.0.9 --port 8000 --reload > backend.log 2>&1 &
+```
+
+### Backend URLs
 - **API URL**: http://192.168.0.9:8000
 - **Documentation**: http://192.168.0.9:8000/docs
-- **Status**: ✅ Running with auto-reload
+- **Health Check**: http://192.168.0.9:8000/health
+- **Redoc**: http://192.168.0.9:8000/redoc
+
+### Verify Backend is Running
+```bash
+# Test health endpoint
+curl http://192.168.0.9:8000/health
+
+# Check if port is listening
+lsof -Pi :8000
+
+# View backend logs (if running with nohup)
+tail -f backend.log
+```
+
+### Stop/Restart Backend
+```bash
+# Stop backend (if running in foreground, use Ctrl+C)
+# If running in background, find and kill the process:
+pkill -f "uvicorn.*src.main:app"
+
+# Or find the specific process ID:
+ps aux | grep uvicorn
+kill <process_id>
+
+# Restart backend
+uvicorn src.main:app --host 192.168.0.9 --port 8000 --reload
+```
 
 ## 🎯 Frontend Deployment (Next Steps)
 
