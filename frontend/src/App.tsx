@@ -3,25 +3,18 @@ import BusinessList from './components/BusinessList';
 import ReviewList from './components/ReviewList';
 import UserList from './components/UserList';
 import TipList from './components/TipList';
-import ApiTest from './components/ApiTest';
 import './App.css';
 
-type TabType = 'businesses' | 'reviews' | 'users' | 'tips' | 'debug';
+type TabType = 'businesses' | 'reviews' | 'users' | 'tips';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<TabType>('debug');
+  const [activeTab, setActiveTab] = useState<TabType>('businesses');
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>🌟 Yelp Data Explorer</h1>
         <nav className="nav-tabs">
-          <button 
-            className={activeTab === 'debug' ? 'active' : ''}
-            onClick={() => setActiveTab('debug')}
-          >
-            🔍 Debug
-          </button>
           <button 
             className={activeTab === 'businesses' ? 'active' : ''}
             onClick={() => setActiveTab('businesses')}
@@ -50,7 +43,6 @@ function App() {
       </header>
 
       <main className="App-main">
-        {activeTab === 'debug' && <ApiTest />}
         {activeTab === 'businesses' && <BusinessList />}
         {activeTab === 'reviews' && <ReviewList />}
         {activeTab === 'users' && <UserList />}
