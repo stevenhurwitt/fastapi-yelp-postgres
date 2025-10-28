@@ -57,7 +57,7 @@ start_backend() {
     BACKEND_PID=$!
     
     # Wait a moment and check if it started
-    sleep 3
+    sleep 5
     if check_port $BACKEND_PORT; then
         echo "   ✅ Backend started successfully (PID: $BACKEND_PID)"
         echo "   📱 API available at: http://$BACKEND_HOST:$BACKEND_PORT"
