@@ -8,13 +8,13 @@ const getApiBaseUrl = () => {
     // If it's the placeholder AWS URL, use local instead
     if (process.env.REACT_APP_API_URL.includes('your-load-balancer-dns')) {
       console.warn('⚠️ Using placeholder AWS URL, falling back to local Raspberry Pi');
-      return 'http://192.168.0.9:8000';
+      return 'https://192.168.0.9';
     }
     return process.env.REACT_APP_API_URL;
   }
   
-  // Development fallback - Updated to match your Raspberry Pi IP
-  return 'http://192.168.0.9:8000';
+  // Development fallback - Updated to use HTTPS
+  return 'https://192.168.0.9';
 };
 
 const API_BASE_URL = getApiBaseUrl();
