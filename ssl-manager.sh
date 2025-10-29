@@ -30,11 +30,18 @@ print_error() {
 check_ssl_status() {
     print_status "Checking SSL certificate status..."
     
-    if [ -f "$SSL_DIR/yelp-api.crt" ] && [ -f "$SSL_DIR/yelp-api.key" ]; then
-        print_status "SSL certificates found"
+    # Check for Let's Encrypt certificates first
+    if sudo find /etc/letsencrypt/live -name "fullchain.pem" 2>/dev/null | head -1 | read cert_file; then
+        print_status "Let's Encrypt certificates found"
+        domain=$(basename $(dirname "$cert_file"))
+        print_status "Domain: $domain"
+        openssl x509 -in "$cert_file" -text -noout | grep -E "(Issuer:|Subject:|Not After :|DNS:|IP Address:)" | grep -v "Let's Encrypt"
+        sudo certbot certificates 2>/dev/null | grep -E "(Certificate Name:|Domains:|Expiry Date:|Certificate Path:)"
+    elif [ -f "$SSL_DIR/yelp-api.crt" ] && [ -f "$SSL_DIR/yelp-api.key" ]; then
+        print_status "Self-signed certificates found"
         openssl x509 -in "$SSL_DIR/yelp-api.crt" -text -noout | grep -E "(Subject:|Not After :|DNS:|IP Address:)"
     else
-        print_error "SSL certificates not found"
+        print_error "No SSL certificates found"
         return 1
     fi
 }
@@ -141,7 +148,16 @@ case "${1:-status}" in
         test_https_connection
         ;;
     "renew")
-        renew_certificate
+        # Check if we have Let's Encrypt certificates
+        if sudo find /etc/letsencrypt/live -name "fullchain.pem" 2>/dev/null | head -1 >/dev/null; then
+            print_status "Renewing Let's Encrypt certificates..."
+            sudo certbot renew
+            sudo nginx -s reload
+            print_status "✓ Let's Encrypt certificate renewal complete"
+        else
+            print_status "Using self-signed certificate renewal..."
+            renew_certificate
+        fi
         ;;
     "restart")
         restart_services
@@ -149,13 +165,18 @@ case "${1:-status}" in
     "urls")
         show_urls
         ;;
+    "letsencrypt")
+        print_status "Setting up Let's Encrypt..."
+        print_info "Use: ./letsencrypt-setup.sh setup yourdomain.com your-email@example.com"
+        ;;
     *)
-        echo "Usage: $0 [status|test|renew|restart|urls]"
-        echo "  status  - Show complete SSL setup status (default)"
-        echo "  test    - Test HTTPS connections"
-        echo "  renew   - Regenerate SSL certificate"
-        echo "  restart - Restart all services"
-        echo "  urls    - Show access URLs"
+        echo "Usage: $0 [status|test|renew|restart|urls|letsencrypt]"
+        echo "  status      - Show complete SSL setup status (default)"
+        echo "  test        - Test HTTPS connections"
+        echo "  renew       - Renew SSL certificate (Let's Encrypt or self-signed)"
+        echo "  restart     - Restart all services"
+        echo "  urls        - Show access URLs"
+        echo "  letsencrypt - Show Let's Encrypt setup instructions"
         exit 1
         ;;
 esac
