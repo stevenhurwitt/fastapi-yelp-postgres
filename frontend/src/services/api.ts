@@ -13,8 +13,13 @@ const getApiBaseUrl = () => {
     return process.env.REACT_APP_API_URL;
   }
   
-  // Development fallback - Updated to use HTTPS
+  // Use nginx reverse proxy - same origin, no CORS issues
   return 'https://192.168.0.9';
+};
+
+// HTTP fallback URL for SSL issues
+const getHttpFallbackUrl = () => {
+  return 'http://192.168.0.9:8000';
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -29,7 +34,9 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 300000, // 5 minute timeout for large datasets
+  timeout: 10000, // 10 seconds - API responds in < 1 second
+  // Handle self-signed certificates in development
+  httpsAgent: process.env.NODE_ENV === 'development' ? undefined : undefined,
 });
 
 // Add request interceptor for debugging
@@ -57,21 +64,63 @@ api.interceptors.response.use(
   },
   (error) => {
     console.error('❌ API Error:', error.message);
+    
+    // Enhanced error logging for debugging
     if (error.code === 'ECONNABORTED') {
-      console.error('⏰ Request timed out - API is taking longer than expected');
+      console.error('⏰ Request timed out after', error.config?.timeout, 'ms');
+      console.error('🔍 URL attempted:', error.config?.url);
+      console.error('💡 Try refreshing browser or checking network connection');
     }
+    
+    if (error.code === 'ERR_NETWORK') {
+      console.error('🌐 Network error - Check if API server is running');
+      console.error('🔍 API URL:', API_BASE_URL);
+      console.error('💡 Ensure SSL certificate is accepted');
+    }
+    
+    if (error.code === 'ERR_CERT_AUTHORITY_INVALID') {
+      console.error('🔒 SSL Certificate error - Self-signed certificate issue');
+      console.error('💡 Navigate to', API_BASE_URL, 'and accept certificate');
+    }
+    
     if (error.response) {
       console.error('📊 Error details:', {
         status: error.response.status,
         statusText: error.response.statusText,
-        data: error.response.data
+        data: error.response.data,
+        url: error.response.config?.url
+      });
+    } else if (error.request) {
+      console.error('📡 Request made but no response received');
+      console.error('🔍 Request details:', {
+        method: error.config?.method,
+        url: error.config?.url,
+        baseURL: error.config?.baseURL,
+        timeout: error.config?.timeout
       });
     }
+    
     return Promise.reject(error);
   }
 );
 
 export class YelpApiService {
+  // Health check and connectivity test
+  static async testConnectivity(): Promise<{ status: string; url: string }> {
+    try {
+      const response = await api.get('/health');
+      return { status: 'success', url: API_BASE_URL };
+    } catch (error) {
+      console.error('Primary API endpoint failed, testing HTTP fallback...');
+      try {
+        const httpResponse = await axios.get(`${getHttpFallbackUrl()}/health`, { timeout: 5000 });
+        return { status: 'fallback', url: getHttpFallbackUrl() };
+      } catch (fallbackError) {
+        throw new Error(`Both HTTPS and HTTP endpoints failed: ${error}`);
+      }
+    }
+  }
+
   // Business endpoints
   static async getBusinesses(filters?: SearchFilters): Promise<Business[]> {
     const params = new URLSearchParams();
@@ -111,6 +160,15 @@ export class YelpApiService {
     if (filters?.limit) params.append('limit', filters.limit.toString());
     
     const response = await api.get(`/api/v1/businesses/state/${encodeURIComponent(state)}?${params}`);
+    return response.data;
+  }
+
+  static async searchBusinessesByName(name: string, filters?: SearchFilters): Promise<Business[]> {
+    const params = new URLSearchParams();
+    if (filters?.skip) params.append('skip', filters.skip.toString());
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    
+    const response = await api.get(`/api/v1/businesses/search/${encodeURIComponent(name)}?${params}`);
     return response.data;
   }
 

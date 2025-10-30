@@ -47,3 +47,9 @@ def read_businesses_by_state(state: str, skip: int = 0, limit: int = 100, db: Se
     """Get businesses by state"""
     businesses = crud.get_businesses_by_state(db, state=state, skip=skip, limit=limit)
     return businesses
+
+@router.get("/search/{name}", response_model=List[schemas.Business])
+def search_businesses_by_name(name: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """Search businesses by name (case-insensitive partial match)"""
+    businesses = crud.get_businesses_by_name(db, name=name, skip=skip, limit=limit)
+    return businesses

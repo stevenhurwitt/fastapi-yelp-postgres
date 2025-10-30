@@ -13,6 +13,7 @@ const BusinessList: React.FC = () => {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [minStars, setMinStars] = useState<number | ''>('');
+  const [searchName, setSearchName] = useState('');
 
   useEffect(() => {
     loadBusinesses();
@@ -22,21 +23,37 @@ const BusinessList: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
+      console.log('🔄 Loading businesses with filters:', { searchName, city, state, minStars, filters });
+      
       let data: Business[];
       
-      if (city) {
+      if (searchName) {
+        console.log('🔍 Searching businesses by name:', searchName);
+        data = await YelpApiService.searchBusinessesByName(searchName, filters);
+      } else if (city) {
+        console.log('🏙️ Searching businesses by city:', city);
         data = await YelpApiService.getBusinessesByCity(city, filters);
       } else if (state) {
+        console.log('🗺️ Searching businesses by state:', state);
         data = await YelpApiService.getBusinessesByState(state, filters);
       } else if (minStars !== '') {
+        console.log('⭐ Searching businesses by stars:', minStars);
         data = await YelpApiService.getBusinessesByStars(Number(minStars), filters);
       } else {
+        console.log('📋 Loading all businesses');
         data = await YelpApiService.getBusinesses(filters);
       }
       
+      console.log('✅ Successfully loaded', data.length, 'businesses');
       setBusinesses(data);
-    } catch (err) {
-      setError('Failed to load businesses');
+    } catch (err: any) {
+      const errorMessage = err.code === 'ECONNABORTED' 
+        ? 'Request timed out. Check your network connection and SSL certificate acceptance.'
+        : err.code === 'ERR_NETWORK'
+        ? 'Network error. Ensure you have accepted the SSL certificate at https://192.168.0.9'
+        : 'Failed to load businesses. Check browser console for details.';
+        
+      setError(errorMessage);
       console.error('Error loading businesses:', err);
     } finally {
       setLoading(false);
@@ -47,7 +64,14 @@ const BusinessList: React.FC = () => {
     setFilters({ ...filters, skip: 0 });
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   const handleClearFilters = () => {
+    setSearchName('');
     setCity('');
     setState('');
     setMinStars('');
@@ -72,7 +96,8 @@ const BusinessList: React.FC = () => {
     return (
       <div className="loading">
         <p>Loading businesses...</p>
-        <p><small>⏳ Large datasets may take 1-2 minutes to load</small></p>
+        <p><small>⏳ Connecting to API at: {process.env.NODE_ENV === 'development' ? 'https://192.168.0.9' : 'current domain'}</small></p>
+        <p><small>💡 If data doesn't load, check browser console (F12) for errors</small></p>
       </div>
     );
   }
@@ -84,15 +109,24 @@ const BusinessList: React.FC = () => {
         <div className="filters">
           <input
             type="text"
+            placeholder="Search by business name"
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            onKeyPress={handleKeyPress}
+          />
+          <input
+            type="text"
             placeholder="Search by city"
             value={city}
             onChange={(e) => setCity(e.target.value)}
+            onKeyPress={handleKeyPress}
           />
           <input
             type="text"
             placeholder="Search by state"
             value={state}
             onChange={(e) => setState(e.target.value)}
+            onKeyPress={handleKeyPress}
           />
           <input
             type="number"
@@ -102,6 +136,7 @@ const BusinessList: React.FC = () => {
             step="0.1"
             value={minStars}
             onChange={(e) => setMinStars(e.target.value ? Number(e.target.value) : '')}
+            onKeyPress={handleKeyPress}
           />
           <button onClick={handleSearch}>Search</button>
           <button onClick={handleClearFilters}>Clear</button>

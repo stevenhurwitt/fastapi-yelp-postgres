@@ -19,6 +19,12 @@ def get_businesses_by_stars(db: Session, min_stars: float, skip: int = 0, limit:
 def get_businesses_by_state(db: Session, state: str, skip: int = 0, limit: int = 100) -> List[models.Business]:
     return db.query(models.Business).filter(models.Business.state == state).offset(skip).limit(limit).all()
 
+def get_businesses_by_name(db: Session, name: str, skip: int = 0, limit: int = 100) -> List[models.Business]:
+    """Search businesses by name (case-insensitive partial match)"""
+    return db.query(models.Business).filter(
+        models.Business.name.ilike(f"%{name}%")
+    ).offset(skip).limit(limit).all()
+
 # Review CRUD operations
 def get_reviews(db: Session, skip: int = 0, limit: int = 100) -> List[models.Review]:
     return db.query(models.Review).offset(skip).limit(limit).all()
