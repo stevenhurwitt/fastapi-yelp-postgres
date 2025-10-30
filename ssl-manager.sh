@@ -169,14 +169,51 @@ case "${1:-status}" in
         print_status "Setting up Let's Encrypt..."
         print_info "Use: ./letsencrypt-setup.sh setup yourdomain.com your-email@example.com"
         ;;
+    "security")
+        print_status "=== Security Status ==="
+        
+        # Check fail2ban
+        if command -v fail2ban-client &> /dev/null; then
+            if systemctl is-active --quiet fail2ban; then
+                print_status "✓ Fail2ban is active"
+                ./fail2ban-manager.sh status 2>/dev/null || print_warning "Run ./fail2ban-manager.sh status for details"
+            else
+                print_error "✗ Fail2ban is not running"
+            fi
+        else
+            print_error "✗ Fail2ban is not installed"
+        fi
+        
+        # Check firewall
+        if command -v ufw &> /dev/null; then
+            if sudo ufw status | grep -q "Status: active"; then
+                print_status "✓ UFW firewall is active"
+                sudo ufw status | grep -E "(80|443)"
+            else
+                print_warning "UFW firewall is not active"
+            fi
+        fi
+        
+        # Check for recent attacks
+        if [ -f /var/log/fail2ban.log ]; then
+            recent_bans=$(sudo grep "$(date '+%Y-%m-%d')" /var/log/fail2ban.log 2>/dev/null | grep -c "Ban" 2>/dev/null || echo "0")
+            if [ "$recent_bans" -gt 0 ] 2>/dev/null; then
+                print_warning "Recent attacks today: $recent_bans bans"
+                print_info "Run ./fail2ban-manager.sh attacks for details"
+            else
+                print_status "✓ No attacks detected today"
+            fi
+        fi
+        ;;
     *)
-        echo "Usage: $0 [status|test|renew|restart|urls|letsencrypt]"
+        echo "Usage: $0 [status|test|renew|restart|urls|letsencrypt|security]"
         echo "  status      - Show complete SSL setup status (default)"
         echo "  test        - Test HTTPS connections"
         echo "  renew       - Renew SSL certificate (Let's Encrypt or self-signed)"
         echo "  restart     - Restart all services"
         echo "  urls        - Show access URLs"
         echo "  letsencrypt - Show Let's Encrypt setup instructions"
+        echo "  security    - Show security status (fail2ban, firewall, attacks)"
         exit 1
         ;;
 esac

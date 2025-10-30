@@ -13,6 +13,18 @@ yelp-fastapi/
 # Environment files
 .env
 
+# SSL certificates and keys (when generated locally)
+*.key
+*.crt
+*.pem
+*.p12
+*.pfx
+
+# Local configuration overrides
+nginx.local.conf
+fail2ban.local.conf
+*.local.conf
+
 # Frontend dependencies and build
 frontend/node_modules/
 frontend/build/
