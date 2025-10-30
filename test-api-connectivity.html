@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Connectivity Test</title>
+</head>
+<body>
+    <h1>API Connectivity Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        async function testAPIs() {
+            const apis = [
+                { name: 'HTTPS API', url: 'https://192.168.0.9/health' },
+                { name: 'HTTP API', url: 'http://192.168.0.9:8000/health' },
+                { name: 'HTTPS Business API', url: 'https://192.168.0.9/api/v1/businesses/?limit=1' },
+                { name: 'HTTP Business API', url: 'http://192.168.0.9:8000/api/v1/businesses/?limit=1' }
+            ];
+            
+            for (const api of apis) {
+                try {
+                    results.innerHTML += `<p>Testing ${api.name}...</p>`;
+                    const start = Date.now();
+                    const response = await fetch(api.url);
+                    const time = Date.now() - start;
+                    
+                    if (response.ok) {
+                        results.innerHTML += `<p>✅ ${api.name}: OK (${time}ms)</p>`;
+                    } else {
+                        results.innerHTML += `<p>❌ ${api.name}: ${response.status} ${response.statusText}</p>`;
+                    }
+                } catch (error) {
+                    results.innerHTML += `<p>❌ ${api.name}: ${error.message}</p>`;
+                }
+            }
+        }
+        
+        testAPIs();
+    </script>
+</body>
+</html>
