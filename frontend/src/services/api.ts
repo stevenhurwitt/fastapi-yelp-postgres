@@ -7,19 +7,15 @@ const getApiBaseUrl = () => {
   if (process.env.REACT_APP_API_URL) {
     // If it's the placeholder AWS URL, use local instead
     if (process.env.REACT_APP_API_URL.includes('your-load-balancer-dns')) {
-      console.warn('⚠️ Using placeholder AWS URL, falling back to local Raspberry Pi');
-      return 'https://192.168.0.9';
+      console.warn('⚠️ Using placeholder AWS URL, falling back to same-origin');
+      return ''; // Same origin - will inherit protocol (HTTPS)
     }
     return process.env.REACT_APP_API_URL;
   }
   
-  // Use nginx reverse proxy - same origin, no CORS issues
-  return 'https://192.168.0.9';
-};
-
-// HTTP fallback URL for SSL issues
-const getHttpFallbackUrl = () => {
-  return 'http://192.168.0.9:8000';
+  // Same-origin approach: nginx reverse proxy handles everything
+  // This automatically uses HTTPS when served over HTTPS, HTTP when served over HTTP
+  return '';
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -105,19 +101,13 @@ api.interceptors.response.use(
 );
 
 export class YelpApiService {
-  // Health check and connectivity test
+  // Health check
   static async testConnectivity(): Promise<{ status: string; url: string }> {
     try {
       const response = await api.get('/health');
-      return { status: 'success', url: API_BASE_URL };
+      return { status: 'success', url: API_BASE_URL || window.location.origin };
     } catch (error) {
-      console.error('Primary API endpoint failed, testing HTTP fallback...');
-      try {
-        const httpResponse = await axios.get(`${getHttpFallbackUrl()}/health`, { timeout: 5000 });
-        return { status: 'fallback', url: getHttpFallbackUrl() };
-      } catch (fallbackError) {
-        throw new Error(`Both HTTPS and HTTP endpoints failed: ${error}`);
-      }
+      throw new Error(`API endpoint failed: ${error}`);
     }
   }
 

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Timeout Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+        button { padding: 10px 15px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🐛 API Timeout Debug Test</h1>
+    
+    <div class="test-section">
+        <h2>Direct API Tests</h2>
+        <button onclick="testHealth()">Test Health Endpoint</button>
+        <button onclick="testBusinessList()">Test Business List</button>
+        <button onclick="testBusinessSearch()">Test Business Search</button>
+        <button onclick="testWithFetch()">Test with Fetch API</button>
+        <div id="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Network Diagnostics</h2>
+        <div id="diagnostics"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://192.168.0.9';
+        const results = document.getElementById('results');
+        const diagnostics = document.getElementById('diagnostics');
+
+        // Initialize diagnostics
+        window.addEventListener('load', () => {
+            diagnostics.innerHTML = `
+                <div class="info"><strong>Browser Info:</strong></div>
+                <pre>User Agent: ${navigator.userAgent}
+Location: ${window.location.href}
+Protocol: ${window.location.protocol}
+Host: ${window.location.host}
+Same Origin: ${window.location.origin === API_BASE}</pre>
+            `;
+        });
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `<strong>[${new Date().toLocaleTimeString()}]</strong> ${message}`;
+            results.appendChild(div);
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function logError(message, error) {
+            log(`❌ ${message}: ${error.message}`, 'error');
+            if (error.name === 'AbortError') {
+                log('   → Request was aborted (likely timeout)', 'error');
+            } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                log('   → Network error or CORS issue', 'error');
+            }
+            console.error('Full error:', error);
+        }
+
+        async function testHealth() {
+            log('🏥 Testing health endpoint...');
+            const startTime = performance.now();
+            
+            try {
+                const response = await fetch(`${API_BASE}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    signal: AbortSignal.timeout(5000) // 5 second timeout
+                });
+                
+                const endTime = performance.now();
+                const data = await response.json();
+                
+                log(`✅ Health check successful in ${(endTime - startTime).toFixed(2)}ms`, 'success');
+                log(`   Response: ${JSON.stringify(data)}`, 'info');
+                
+            } catch (error) {
+                const endTime = performance.now();
+                logError(`Health check failed after ${(endTime - startTime).toFixed(2)}ms`, error);
+            }
+        }
+
+        async function testBusinessList() {
+            log('🏢 Testing business list endpoint...');
+            const startTime = performance.now();
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/businesses/?limit=3`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    signal: AbortSignal.timeout(10000) // 10 second timeout
+                });
+                
+                const endTime = performance.now();
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                log(`✅ Business list successful in ${(endTime - startTime).toFixed(2)}ms`, 'success');
+                log(`   Found ${data.length} businesses`, 'info');
+                
+            } catch (error) {
+                const endTime = performance.now();
+                logError(`Business list failed after ${(endTime - startTime).toFixed(2)}ms`, error);
+            }
+        }
+
+        async function testBusinessSearch() {
+            log('🔍 Testing business search endpoint...');
+            const startTime = performance.now();
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/businesses/search/pizza?limit=3`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    signal: AbortSignal.timeout(10000) // 10 second timeout
+                });
+                
+                const endTime = performance.now();
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                log(`✅ Business search successful in ${(endTime - startTime).toFixed(2)}ms`, 'success');
+                log(`   Found ${data.length} pizza businesses`, 'info');
+                
+            } catch (error) {
+                const endTime = performance.now();
+                logError(`Business search failed after ${(endTime - startTime).toFixed(2)}ms`, error);
+            }
+        }
+
+        async function testWithFetch() {
+            log('⚡ Testing with raw Fetch API (like React app)...');
+            const startTime = performance.now();
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                const response = await fetch(`${API_BASE}/api/v1/businesses/?limit=5`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                const endTime = performance.now();
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                log(`✅ Raw fetch successful in ${(endTime - startTime).toFixed(2)}ms`, 'success');
+                log(`   Data type: ${typeof data}, Length: ${data.length}`, 'info');
+                
+            } catch (error) {
+                const endTime = performance.now();
+                logError(`Raw fetch failed after ${(endTime - startTime).toFixed(2)}ms`, error);
+            }
+        }
+
+        // Clear results
+        function clearResults() {
+            results.innerHTML = '';
+        }
+    </script>
+
+    <button onclick="clearResults()">Clear Results</button>
+    
+    <div class="test-section">
+        <h2>Manual Test URLs</h2>
+        <p>Test these URLs directly in a new tab:</p>
+        <ul>
+            <li><a href="https://192.168.0.9/health" target="_blank">Health Check</a></li>
+            <li><a href="https://192.168.0.9/api/v1/businesses/?limit=5" target="_blank">Business List</a></li>
+            <li><a href="https://192.168.0.9/api/v1/businesses/search/pizza?limit=3" target="_blank">Pizza Search</a></li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Instructions</h2>
+        <ol>
+            <li><strong>Accept SSL Certificate:</strong> If you see security warnings, click "Advanced" → "Proceed to 192.168.0.9"</li>
+            <li><strong>Open Console:</strong> Press F12 → Console tab to see detailed logs</li>
+            <li><strong>Test APIs:</strong> Click the test buttons above</li>
+            <li><strong>Compare Results:</strong> Check if this test page works while React app doesn't</li>
+        </ol>
+    </div>
+</body>
+</html>
