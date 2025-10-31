@@ -57,3 +57,6 @@ Thumbs.db
 frontend/frontend.log
 frontend.log
 backend.log
+
+database-backups/*.sql
+database-backups/*.sql.gz
