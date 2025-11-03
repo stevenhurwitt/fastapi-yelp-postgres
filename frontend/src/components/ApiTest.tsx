@@ -40,7 +40,7 @@ const ApiTest: React.FC = () => {
     <div style={{ padding: '20px', border: '1px solid #ccc', margin: '20px', borderRadius: '8px' }}>
       <h2>🔍 API Debug Test</h2>
       <div><strong>Status:</strong> {apiStatus}</div>
-      <div><strong>API URL:</strong> http://192.168.0.9:8000</div>
+      <div><strong>API URL:</strong> {window.location.origin}/api</div>
       <div><strong>Businesses Found:</strong> {businessCount}</div>
       <div><strong>Reviews Found:</strong> {reviewCount}</div>
       {error && <div style={{ color: 'red' }}><strong>Error:</strong> {error}</div>}

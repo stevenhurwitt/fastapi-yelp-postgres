@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download SSL Certificate - Yelp API</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .content {
+            padding: 40px;
+        }
+        .download-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #667eea;
+        }
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .steps {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .steps ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 10px 0;
+            padding: 5px 0;
+        }
+        .cert-info {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 SSL Certificate Download</h1>
+            <p>Yelp API Self-Signed Certificate</p>
+        </div>
+        
+        <div class="content">
+            <div class="download-section">
+                <h2>📥 Download Certificate</h2>
+                <p>Click the button below to download the SSL certificate for secure browsing:</p>
+                <a href="/certificate" class="download-btn" download="yelp-api-certificate.crt">
+                    🔒 Download Certificate (.crt)
+                </a>
+                <br>
+                <small style="color: #666; margin-top: 10px; display: block;">
+                    File: yelp-api-certificate.crt | Size: ~1.3KB
+                </small>
+            </div>
+
+            <div class="info-box">
+                <h3>📋 Certificate Information</h3>
+                <div class="cert-info">
+Subject: CN=192.168.0.9, O=YelpAPI, L=Local, ST=Virginia, C=US<br>
+Issuer: Self-signed<br>
+Valid: Oct 29, 2025 - Oct 29, 2026<br>
+Algorithm: SHA-256 with RSA (2048-bit)
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Important Security Notice</h3>
+                <p><strong>This is a self-signed certificate for development use only.</strong></p>
+                <ul>
+                    <li>Only install certificates you trust</li>
+                    <li>This certificate is valid only for <code>192.168.0.9</code></li>
+                    <li>For production use, obtain certificates from trusted Certificate Authorities</li>
+                </ul>
+            </div>
+
+            <div class="steps">
+                <h3>🪟 Installation Steps for Windows (Microsoft Edge/Chrome)</h3>
+                <ol>
+                    <li><strong>Download</strong> the certificate using the button above</li>
+                    <li><strong>Open Certificate Manager</strong>:
+                        <ul>
+                            <li>Press <kbd>Windows + R</kbd></li>
+                            <li>Type <code>certmgr.msc</code> and press Enter</li>
+                        </ul>
+                    </li>
+                    <li><strong>Import Certificate</strong>:
+                        <ul>
+                            <li>Expand "Trusted Root Certification Authorities"</li>
+                            <li>Right-click "Certificates" → "All Tasks" → "Import..."</li>
+                            <li>Select the downloaded certificate file</li>
+                            <li><strong>Important:</strong> Choose "Trusted Root Certification Authorities" store</li>
+                        </ul>
+                    </li>
+                    <li><strong>Restart your browser</strong></li>
+                    <li><strong>Visit</strong> <a href="https://192.168.0.9" target="_blank">https://192.168.0.9</a> - should show secure lock 🔒</li>
+                </ol>
+            </div>
+
+            <div class="steps">
+                <h3>🍎 Installation Steps for macOS (Safari/Chrome/Edge)</h3>
+                <ol>
+                    <li><strong>Download</strong> the certificate using the button above</li>
+                    <li><strong>Open Keychain Access</strong>:
+                        <ul>
+                            <li>Press <kbd>Cmd + Space</kbd> and type "Keychain Access"</li>
+                            <li>Or go to Applications → Utilities → Keychain Access</li>
+                        </ul>
+                    </li>
+                    <li><strong>Import Certificate</strong>:
+                        <ul>
+                            <li>Select <strong>"System"</strong> keychain in the left sidebar</li>
+                            <li>Drag and drop the certificate file into Keychain Access</li>
+                            <li>Or use File → Import Items...</li>
+                        </ul>
+                    </li>
+                    <li><strong>Trust the Certificate</strong>:
+                        <ul>
+                            <li>Double-click the "192.168.0.9" certificate</li>
+                            <li>Expand the "Trust" section</li>
+                            <li>Change "When using this certificate" to <strong>"Always Trust"</strong></li>
+                            <li>Enter your Mac password when prompted</li>
+                        </ul>
+                    </li>
+                    <li><strong>Restart your browser</strong></li>
+                    <li><strong>Visit</strong> <a href="https://192.168.0.9" target="_blank">https://192.168.0.9</a> - should show secure lock 🔒</li>
+                </ol>
+                <div class="info-box" style="margin-top: 15px;">
+                    <strong>🚀 Quick Mac Terminal Installation:</strong>
+                    <div class="cert-info">
+curl -k https://192.168.0.9/certificate -o /tmp/cert.crt && sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /tmp/cert.crt
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>✅ After Installation</h3>
+                <p>Once installed, you will:</p>
+                <ul>
+                    <li>See a secure lock icon 🔒 when visiting <code>https://192.168.0.9</code></li>
+                    <li>Eliminate SSL certificate warnings</li>
+                    <li>Avoid timeout issues caused by SSL handshake delays</li>
+                    <li>Have seamless access to the Yelp API frontend and backend</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h3>🦊 Special Note for Firefox Users</h3>
+                <p>Firefox uses its own certificate store and requires separate installation:</p>
+                <ul>
+                    <li><strong>Windows/Mac:</strong> Navigate to <code>https://192.168.0.9</code> → Click "Advanced" → "Accept the Risk and Continue"</li>
+                    <li><strong>Manual:</strong> Firefox → Preferences → Privacy & Security → Certificates → View Certificates → Authorities → Import</li>
+                </ul>
+            </div>
+
+            <div class="steps">
+                <h3>🔄 Alternative: Browser Exception</h3>
+                <p>If you prefer not to install the certificate system-wide:</p>
+                <ol>
+                    <li>Navigate to <a href="https://192.168.0.9" target="_blank">https://192.168.0.9</a></li>
+                    <li>Click "Advanced" on the security warning</li>
+                    <li>Click "Continue to 192.168.0.9 (unsafe)" or "Accept the Risk and Continue"</li>
+                    <li>Your browser will remember this exception for the session</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🚀 Yelp API Development Environment | SSL Certificate Management</p>
+            <p>For support, check the <a href="/docs" target="_blank">API Documentation</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Add click tracking for download
+        document.querySelector('.download-btn').addEventListener('click', function() {
+            setTimeout(() => {
+                alert('Certificate downloaded! Follow the installation steps above to install it in Microsoft Edge.');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

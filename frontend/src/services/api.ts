@@ -30,7 +30,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // 10 seconds - API responds in < 1 second
+  timeout: 30000, // 30 seconds - increased for SSL handshake with self-signed certs
   // Handle self-signed certificates in development
   httpsAgent: process.env.NODE_ENV === 'development' ? undefined : undefined,
 });
@@ -40,10 +40,32 @@ api.interceptors.request.use(
   (config) => {
     console.log('🚀 Making API request to:', config.url);
     console.log('🔗 Full URL:', `${config.baseURL}${config.url}`);
+    console.log('⏱️ Timeout setting:', config.timeout);
     return config;
   },
   (error) => {
     console.error('❌ Request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for debugging
+api.interceptors.response.use(
+  (response) => {
+    console.log('✅ API response received:', response.status, response.config.url);
+    return response;
+  },
+  (error) => {
+    if (error.code === 'ECONNABORTED') {
+      console.error('⏰ Request timeout:', error.config.url, 'after', error.config.timeout, 'ms');
+      console.error('💡 This usually indicates SSL certificate issues or network connectivity problems');
+      console.error('🔧 Try visiting https://192.168.0.9 in your browser and accepting the SSL certificate');
+    } else if (error.code === 'ERR_NETWORK') {
+      console.error('🌐 Network error:', error.config.url);
+      console.error('💡 This could be a CORS issue or SSL certificate problem');
+    } else {
+      console.error('❌ API error:', error.response?.status, error.response?.statusText, error.config.url);
+    }
     return Promise.reject(error);
   }
 );
