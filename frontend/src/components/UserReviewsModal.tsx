@@ -61,7 +61,7 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
       setHasMore(true);
       loadReviews(true);
     }
-  }, [isOpen, user.user_id]);
+  }, [isOpen, user.user_id, loadReviews]);
 
   const loadMoreReviews = useCallback(() => {
     if (hasMore && !loading) {
@@ -69,7 +69,8 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
     }
   }, [hasMore, loading, loadReviews]);
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'No date';
     return new Date(dateString).toLocaleDateString();
   };
 
@@ -150,11 +151,11 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
                     </div>
                     <div className="review-meta">
                       <div className="rating">
-                        {renderStars(review.stars)}
-                        <span className="rating-number">({review.stars}/5)</span>
+                        {renderStars(review.stars || 0)}
+                        <span className="rating-number">({review.stars || 0}/5)</span>
                       </div>
                       <div className="review-date">
-                        📅 {formatDate(review.date)}
+                        📅 {review.date ? formatDate(review.date) : 'No date'}
                       </div>
                     </div>
                   </div>
@@ -166,17 +167,17 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
                   )}
 
                   <div className="review-feedback">
-                    {review.useful > 0 && (
+                    {(review.useful || 0) > 0 && (
                       <span className="feedback-stat useful">
                         👍 {review.useful} useful
                       </span>
                     )}
-                    {review.funny > 0 && (
+                    {(review.funny || 0) > 0 && (
                       <span className="feedback-stat funny">
                         😄 {review.funny} funny
                       </span>
                     )}
-                    {review.cool > 0 && (
+                    {(review.cool || 0) > 0 && (
                       <span className="feedback-stat cool">
                         😎 {review.cool} cool
                       </span>
