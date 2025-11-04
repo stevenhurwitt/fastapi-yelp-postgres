@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Business, SearchFilters } from '../types/api';
 import { YelpApiService } from '../services/api';
+import BusinessReviewsModal from './BusinessReviewsModal';
 
 const BusinessList: React.FC = () => {
   const [businesses, setBusinesses] = useState<Business[]>([]);
@@ -14,6 +15,7 @@ const BusinessList: React.FC = () => {
   const [state, setState] = useState('');
   const [minStars, setMinStars] = useState<number | ''>('');
   const [searchName, setSearchName] = useState('');
+  const [selectedBusiness, setSelectedBusiness] = useState<{id: string, name: string} | null>(null);
 
   useEffect(() => {
     loadBusinesses();
@@ -68,6 +70,10 @@ const BusinessList: React.FC = () => {
     if (e.key === 'Enter') {
       handleSearch();
     }
+  };
+
+  const handleReviewsClick = (businessId: string, businessName: string) => {
+    setSelectedBusiness({ id: businessId, name: businessName });
   };
 
   const handleClearFilters = () => {
@@ -151,7 +157,13 @@ const BusinessList: React.FC = () => {
             <h3>{business.name}</h3>
             <div className="business-info">
               <div className="stars">{renderStars(business.stars)}</div>
-              <div className="review-count">({business.review_count} reviews)</div>
+              <div 
+                className="review-count clickable" 
+                onClick={() => business.business_id && business.name && handleReviewsClick(business.business_id, business.name)}
+                title={`View ${business.review_count} reviews for ${business.name || 'this business'}`}
+              >
+                ({business.review_count} reviews)
+              </div>
               <div className="location">
                 {business.address && <div>{business.address}</div>}
                 <div>{business.city}, {business.state} {business.postal_code}</div>
@@ -171,6 +183,15 @@ const BusinessList: React.FC = () => {
             {loading ? 'Loading...' : 'Load More'}
           </button>
         </div>
+      )}
+
+      {selectedBusiness && (
+        <BusinessReviewsModal
+          businessId={selectedBusiness.id}
+          businessName={selectedBusiness.name}
+          isOpen={!!selectedBusiness}
+          onClose={() => setSelectedBusiness(null)}
+        />
       )}
     </div>
   );
