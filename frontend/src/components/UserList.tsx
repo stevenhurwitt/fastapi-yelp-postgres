@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, SearchFilters } from '../types/api';
 import { YelpApiService } from '../services/api';
+import UserReviewsModal from './UserReviewsModal';
 
 const UserList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -12,6 +13,10 @@ const UserList: React.FC = () => {
   });
   const [minReviews, setMinReviews] = useState<number | ''>('');
   const [minStars, setMinStars] = useState<number | ''>('');
+  
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
     loadUsers();
@@ -76,6 +81,17 @@ const UserList: React.FC = () => {
     );
   };
 
+  // Modal handlers
+  const handleReviewsClick = (user: User) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
+  };
+
   const getTopCompliments = (user: User) => {
     const compliments = [
       { type: 'Funny', count: user.compliment_funny },
@@ -134,7 +150,11 @@ const UserList: React.FC = () => {
             <div className="user-header">
               <h3>{user.name || 'Anonymous User'}</h3>
               <div className="user-stats">
-                <div className="review-count">
+                <div 
+                  className="review-count clickable" 
+                  onClick={() => handleReviewsClick(user)}
+                  title={`View all ${user.review_count || 0} reviews by ${user.name || 'this user'}`}
+                >
                   📝 {user.review_count || 0} reviews
                 </div>
                 {user.average_stars && (
@@ -190,6 +210,15 @@ const UserList: React.FC = () => {
             {loading ? 'Loading...' : 'Load More'}
           </button>
         </div>
+      )}
+
+      {/* User Reviews Modal */}
+      {selectedUser && (
+        <UserReviewsModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          user={selectedUser}
+        />
       )}
     </div>
   );
