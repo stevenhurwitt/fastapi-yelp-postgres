@@ -145,13 +145,8 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
                   <div className="review-header">
                     <div className="business-info">
                       <h4 className="business-name">
-                        {review.business?.name || 'Business'}
+                        {review.business_name || 'Business'}
                       </h4>
-                      {review.business?.city && review.business?.state && (
-                        <span className="business-location">
-                          📍 {review.business.city}, {review.business.state}
-                        </span>
-                      )}
                     </div>
                     <div className="review-meta">
                       <div className="rating">
