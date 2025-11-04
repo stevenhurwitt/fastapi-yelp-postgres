@@ -16,8 +16,7 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
   const [hasMore, setHasMore] = useState(true);
   const limit = 20;
 
-  // Memoized cache key to prevent unnecessary re-fetches
-  const cacheKey = useMemo(() => `user_${user.user_id}`, [user.user_id]);
+  // Note: Removed cacheKey for now since it's not being used in the current implementation
 
   const loadReviews = useCallback(async (reset = false) => {
     if (loading) return;
