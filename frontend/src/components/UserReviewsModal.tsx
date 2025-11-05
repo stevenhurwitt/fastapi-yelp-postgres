@@ -71,7 +71,7 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
       setLoading(false);
       console.log('✅ Loading complete, setting loading to false');
     }
-  }, [user.user_id, offset, limit]); // Removed 'loading' from dependencies to prevent infinite loop
+  }, [user.user_id, limit]); // Removed offset and loading from dependencies to prevent infinite loop
 
   // Load reviews when modal opens or user changes
   useEffect(() => {
