@@ -69,7 +69,7 @@ api.interceptors.response.use(
     }
     return response;
   },
-  (error) => {
+  async (error) => {
     console.error('❌ API Error:', error.message);
     
     // Enhanced error logging for debugging
