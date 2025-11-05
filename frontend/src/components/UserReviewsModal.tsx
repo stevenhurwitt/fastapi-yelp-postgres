@@ -27,9 +27,12 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
     try {
       const currentOffset = reset ? 0 : offset;
       const filters = { skip: currentOffset, limit };
-      const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
       
-      if (data && data.length >= 0) {
+      console.log('🔍 Loading reviews for user:', user.user_id, 'with filters:', filters);
+      const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
+      console.log('📊 Received review data:', data);
+      
+      if (Array.isArray(data)) {
         if (reset) {
           setReviews(data);
           setOffset(limit);
@@ -40,13 +43,19 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
         
         // Check if we have more reviews to load
         setHasMore(data.length === limit);
+        
+        if (data.length === 0 && reset) {
+          setError('This user has not written any reviews yet.');
+        }
       } else {
-        setError('No reviews found for this user');
+        console.error('❌ Invalid data format received:', data);
+        setError('Invalid response format from server');
         setHasMore(false);
       }
     } catch (err) {
-      console.error('Error loading user reviews:', err);
-      setError('Failed to load reviews. Please try again.');
+      console.error('❌ Error loading user reviews:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setError(`Failed to load reviews: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

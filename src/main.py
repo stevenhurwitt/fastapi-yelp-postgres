@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
 from .db.database import init_db
@@ -11,7 +12,14 @@ app = FastAPI(
     version=settings.api_version,
 )
 
-# CORS is handled by nginx reverse proxy to avoid conflicts
+# Add CORS middleware for development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "https://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Include routers
 app.include_router(business_routes.router, prefix="/api/v1/businesses", tags=["businesses"])
