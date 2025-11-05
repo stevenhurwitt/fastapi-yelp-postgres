@@ -19,7 +19,12 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
   // Note: Removed cacheKey for now since it's not being used in the current implementation
 
   const loadReviews = useCallback(async (reset = false) => {
-    if (loading) return;
+    console.log('🔍 loadReviews called with reset:', reset, 'loading:', loading);
+    
+    if (loading) {
+      console.log('⚠️ Already loading, skipping request');
+      return;
+    }
     
     setLoading(true);
     setError(null);
@@ -33,16 +38,22 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
       console.log('📊 Received review data:', data);
       
       if (Array.isArray(data)) {
+        console.log('✅ Data is array with length:', data.length);
+        
         if (reset) {
+          console.log('🔄 Resetting reviews with new data');
           setReviews(data);
           setOffset(limit);
         } else {
+          console.log('➕ Appending reviews to existing');
           setReviews(prev => [...prev, ...data]);
           setOffset(prev => prev + limit);
         }
         
         // Check if we have more reviews to load
-        setHasMore(data.length === limit);
+        const hasMoreData = data.length === limit;
+        setHasMore(hasMoreData);
+        console.log('📈 Has more data:', hasMoreData);
         
         if (data.length === 0 && reset) {
           setError('This user has not written any reviews yet.');
@@ -58,24 +69,26 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
       setError(`Failed to load reviews: ${errorMessage}`);
     } finally {
       setLoading(false);
+      console.log('✅ Loading complete, setting loading to false');
     }
-  }, [user.user_id, offset, loading, limit]);
+  }, [user.user_id, offset, limit]); // Removed 'loading' from dependencies to prevent infinite loop
 
   // Load reviews when modal opens or user changes
   useEffect(() => {
     if (isOpen && user.user_id) {
+      console.log('🔄 Modal opened, resetting and loading reviews for user:', user.user_id);
       setReviews([]);
       setOffset(0);
       setHasMore(true);
       loadReviews(true);
     }
-  }, [isOpen, user.user_id, loadReviews]);
+  }, [isOpen, user.user_id]); // Removed loadReviews dependency to prevent infinite loop
 
-  const loadMoreReviews = useCallback(() => {
+  const loadMoreReviews = () => {
     if (hasMore && !loading) {
       loadReviews(false);
     }
-  }, [hasMore, loading, loadReviews]);
+  };
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return 'No date';
