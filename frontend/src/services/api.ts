@@ -30,10 +30,20 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30 seconds - increased for SSL handshake with self-signed certs
+  timeout: 60000, // 60 seconds - increased timeout for slow connections
   // Handle self-signed certificates in development
   httpsAgent: process.env.NODE_ENV === 'development' ? undefined : undefined,
 });
+
+// Add retry mechanism for failed requests
+const retryRequest = async (error: any, retries = 2): Promise<any> => {
+  if (retries > 0 && (error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK')) {
+    console.log(`🔄 Retrying request (${3 - retries}/3): ${error.config?.url}`);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+    return api.request(error.config);
+  }
+  throw error;
+};
 
 // Add request interceptor for debugging
 api.interceptors.request.use(
@@ -52,29 +62,8 @@ api.interceptors.request.use(
 // Add response interceptor for debugging
 api.interceptors.response.use(
   (response) => {
-    console.log('✅ API response received:', response.status, response.config.url);
-    return response;
-  },
-  (error) => {
-    if (error.code === 'ECONNABORTED') {
-      console.error('⏰ Request timeout:', error.config.url, 'after', error.config.timeout, 'ms');
-      console.error('💡 This usually indicates SSL certificate issues or network connectivity problems');
-      console.error('🔧 Try visiting https://192.168.0.9 in your browser and accepting the SSL certificate');
-    } else if (error.code === 'ERR_NETWORK') {
-      console.error('🌐 Network error:', error.config.url);
-      console.error('💡 This could be a CORS issue or SSL certificate problem');
-    } else {
-      console.error('❌ API error:', error.response?.status, error.response?.statusText, error.config.url);
-    }
-    return Promise.reject(error);
-  }
-);
-
-// Add response interceptor for debugging
-api.interceptors.response.use(
-  (response) => {
     const itemCount = Array.isArray(response.data) ? response.data.length : 'N/A';
-    console.log('✅ API response:', response.status, itemCount, 'items');
+    console.log('✅ API response:', response.status, response.config.url, '|', itemCount, 'items');
     if (response.config.url?.includes('reviews') && typeof itemCount === 'number' && itemCount > 0) {
       console.log('🎉 Reviews loaded successfully!', itemCount, 'reviews received');
     }
@@ -88,15 +77,11 @@ api.interceptors.response.use(
       console.error('⏰ Request timed out after', error.config?.timeout, 'ms');
       console.error('🔍 URL attempted:', error.config?.url);
       console.error('💡 Try refreshing browser or checking network connection');
-    }
-    
-    if (error.code === 'ERR_NETWORK') {
+    } else if (error.code === 'ERR_NETWORK') {
       console.error('🌐 Network error - Check if API server is running');
       console.error('🔍 API URL:', API_BASE_URL);
       console.error('💡 Ensure SSL certificate is accepted');
-    }
-    
-    if (error.code === 'ERR_CERT_AUTHORITY_INVALID') {
+    } else if (error.code === 'ERR_CERT_AUTHORITY_INVALID') {
       console.error('🔒 SSL Certificate error - Self-signed certificate issue');
       console.error('💡 Navigate to', API_BASE_URL, 'and accept certificate');
     }
@@ -118,7 +103,12 @@ api.interceptors.response.use(
       });
     }
     
-    return Promise.reject(error);
+    // Try to retry the request for certain types of errors
+    try {
+      return await retryRequest(error);
+    } catch (retryError) {
+      return Promise.reject(retryError);
+    }
   }
 );
 
