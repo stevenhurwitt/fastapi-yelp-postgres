@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { YelpApiService } from '../services/api';
 import { Review, User } from '../types/api';
 
@@ -18,60 +18,48 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
 
   // Note: Removed cacheKey for now since it's not being used in the current implementation
 
-  const loadReviews = useCallback(async (reset = false) => {
-    console.log('🔍 loadReviews called with reset:', reset, 'loading:', loading);
-    
+  // Simple function to load more reviews (not useCallback to avoid dependency issues)
+  const loadMoreReviews = async () => {
     if (loading) {
       console.log('⚠️ Already loading, skipping request');
       return;
     }
     
+    console.log('🔍 loadMoreReviews called, current offset:', offset);
     setLoading(true);
     setError(null);
     
     try {
-      const currentOffset = reset ? 0 : offset;
-      const filters = { skip: currentOffset, limit };
+      const filters = { skip: offset, limit };
       
-      console.log('🔍 Loading reviews for user:', user.user_id, 'with filters:', filters);
+      console.log('🔍 Loading more reviews for user:', user.user_id, 'with filters:', filters);
       const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
-      console.log('📊 Received review data:', data);
+      console.log('📊 Received additional review data:', data);
       
       if (Array.isArray(data)) {
         console.log('✅ Data is array with length:', data.length);
         
-        if (reset) {
-          console.log('🔄 Resetting reviews with new data');
-          setReviews(data);
-          setOffset(limit);
-        } else {
-          console.log('➕ Appending reviews to existing');
-          setReviews(prev => [...prev, ...data]);
-          setOffset(prev => prev + limit);
-        }
+        setReviews(prev => [...prev, ...data]);
+        setOffset(prev => prev + limit);
         
         // Check if we have more reviews to load
         const hasMoreData = data.length === limit;
         setHasMore(hasMoreData);
         console.log('📈 Has more data:', hasMoreData);
-        
-        if (data.length === 0 && reset) {
-          setError('This user has not written any reviews yet.');
-        }
       } else {
         console.error('❌ Invalid data format received:', data);
         setError('Invalid response format from server');
         setHasMore(false);
       }
     } catch (err) {
-      console.error('❌ Error loading user reviews:', err);
+      console.error('❌ Error loading more reviews:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      setError(`Failed to load reviews: ${errorMessage}`);
+      setError(`Failed to load more reviews: ${errorMessage}`);
     } finally {
       setLoading(false);
       console.log('✅ Loading complete, setting loading to false');
     }
-  }, [user.user_id, limit]); // Removed offset and loading from dependencies to prevent infinite loop
+  };
 
   // Load reviews when modal opens or user changes
   useEffect(() => {
@@ -131,9 +119,9 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
     };
   }, [isOpen, user.user_id, limit]); // Simple dependencies
 
-  const loadMoreReviews = () => {
+  const handleLoadMore = () => {
     if (hasMore && !loading) {
-      loadReviews(false);
+      loadMoreReviews();
     }
   };
 
@@ -201,7 +189,7 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
           {error && reviews.length === 0 && (
             <div className="error-state">
               <p className="error-message">{error}</p>
-              <button onClick={() => loadReviews(true)} className="retry-button">
+              <button onClick={() => window.location.reload()} className="retry-button">
                 Try Again
               </button>
             </div>
@@ -259,7 +247,7 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
           {reviews.length > 0 && hasMore && (
             <div className="load-more-container">
               <button 
-                onClick={loadMoreReviews} 
+                onClick={handleLoadMore} 
                 disabled={loading}
                 className="load-more-button"
               >
