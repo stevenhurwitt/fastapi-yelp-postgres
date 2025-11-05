@@ -75,14 +75,61 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
 
   // Load reviews when modal opens or user changes
   useEffect(() => {
-    if (isOpen && user.user_id) {
-      console.log('🔄 Modal opened, resetting and loading reviews for user:', user.user_id);
-      setReviews([]);
-      setOffset(0);
-      setHasMore(true);
-      loadReviews(true);
-    }
-  }, [isOpen, user.user_id]); // Removed loadReviews dependency to prevent infinite loop
+    if (!isOpen || !user.user_id) return;
+    
+    console.log('🔄 Modal opened for user:', user.user_id);
+    
+    // Reset state
+    setReviews([]);
+    setOffset(0);
+    setHasMore(true);
+    setError(null);
+    
+    // Direct API call without using loadReviews callback
+    let mounted = true;
+    
+    const fetchReviews = async () => {
+      setLoading(true);
+      
+      try {
+        const filters = { skip: 0, limit };
+        console.log('🔍 Fetching reviews for:', user.user_id, filters);
+        
+        const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
+        console.log('📊 Reviews fetched:', data);
+        
+        if (!mounted) return;
+        
+        if (Array.isArray(data)) {
+          setReviews(data);
+          setOffset(limit);
+          setHasMore(data.length === limit);
+          
+          if (data.length === 0) {
+            setError('This user has not written any reviews yet.');
+          }
+        } else {
+          setError('Invalid response format from server');
+        }
+      } catch (err) {
+        console.error('❌ Error fetching reviews:', err);
+        if (mounted) {
+          const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+          setError(`Failed to load reviews: ${errorMessage}`);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+    
+    fetchReviews();
+    
+    return () => {
+      mounted = false;
+    };
+  }, [isOpen, user.user_id, limit]); // Simple dependencies
 
   const loadMoreReviews = () => {
     if (hasMore && !loading) {
