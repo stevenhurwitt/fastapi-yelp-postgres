@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { YelpApiService } from '../services/api';
 import { Review, User } from '../types/api';
 
@@ -18,112 +18,72 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
 
   // Note: Removed cacheKey for now since it's not being used in the current implementation
 
-  // Simple function to load more reviews (not useCallback to avoid dependency issues)
-  const loadMoreReviews = async () => {
-    if (loading) {
-      console.log('⚠️ Already loading, skipping request');
-      return;
+  // Load reviews when modal opens or user changes
+  useEffect(() => {
+    if (isOpen && user.user_id) {
+      console.log('🔄 Modal opened for user:', user.user_id);
+      setReviews([]);
+      setOffset(0);
+      setHasMore(true);
+      setError(null);
+      
+      // Load initial reviews
+      const loadInitialReviews = async () => {
+        setLoading(true);
+        try {
+          const filters = { skip: 0, limit };
+          console.log('🔍 Loading initial reviews for user:', user.user_id);
+          const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
+          
+          if (Array.isArray(data)) {
+            setReviews(data);
+            setOffset(limit);
+            setHasMore(data.length === limit);
+            
+            if (data.length === 0) {
+              setError('This user has not written any reviews yet.');
+            }
+          } else {
+            console.error('❌ Invalid data format received:', data);
+            setError('Invalid response format from server');
+          }
+        } catch (err) {
+          console.error('❌ Error loading initial reviews:', err);
+          const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+          setError(`Failed to load reviews: ${errorMessage}`);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      loadInitialReviews();
     }
+  }, [isOpen, user.user_id, limit]);
+
+  const loadMoreReviews = useCallback(async () => {
+    if (!hasMore || loading) return;
     
-    console.log('🔍 loadMoreReviews called, current offset:', offset);
     setLoading(true);
-    setError(null);
-    
     try {
       const filters = { skip: offset, limit };
-      
-      console.log('🔍 Loading more reviews for user:', user.user_id, 'with filters:', filters);
+      console.log('🔍 Loading more reviews with offset:', offset);
       const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
-      console.log('📊 Received additional review data:', data);
       
       if (Array.isArray(data)) {
-        console.log('✅ Data is array with length:', data.length);
-        
         setReviews(prev => [...prev, ...data]);
         setOffset(prev => prev + limit);
-        
-        // Check if we have more reviews to load
-        const hasMoreData = data.length === limit;
-        setHasMore(hasMoreData);
-        console.log('📈 Has more data:', hasMoreData);
+        setHasMore(data.length === limit);
       } else {
-        console.error('❌ Invalid data format received:', data);
-        setError('Invalid response format from server');
+        console.error('❌ Invalid data format for load more:', data);
         setHasMore(false);
       }
     } catch (err) {
       console.error('❌ Error loading more reviews:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      setError(`Failed to load more reviews: ${errorMessage}`);
     } finally {
       setLoading(false);
       console.log('✅ Loading complete, setting loading to false');
     }
-  };
-
-  // Load reviews when modal opens or user changes
-  useEffect(() => {
-    if (!isOpen || !user.user_id) return;
-    
-    console.log('🔄 Modal opened for user:', user.user_id);
-    
-    // Reset state
-    setReviews([]);
-    setOffset(0);
-    setHasMore(true);
-    setError(null);
-    
-    // Direct API call without using loadReviews callback
-    let mounted = true;
-    
-    const fetchReviews = async () => {
-      setLoading(true);
-      
-      try {
-        const filters = { skip: 0, limit };
-        console.log('🔍 Fetching reviews for:', user.user_id, filters);
-        
-        const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
-        console.log('📊 Reviews fetched:', data);
-        
-        if (!mounted) return;
-        
-        if (Array.isArray(data)) {
-          setReviews(data);
-          setOffset(limit);
-          setHasMore(data.length === limit);
-          
-          if (data.length === 0) {
-            setError('This user has not written any reviews yet.');
-          }
-        } else {
-          setError('Invalid response format from server');
-        }
-      } catch (err) {
-        console.error('❌ Error fetching reviews:', err);
-        if (mounted) {
-          const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-          setError(`Failed to load reviews: ${errorMessage}`);
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-    
-    fetchReviews();
-    
-    return () => {
-      mounted = false;
-    };
-  }, [isOpen, user.user_id, limit]); // Simple dependencies
-
-  const handleLoadMore = () => {
-    if (hasMore && !loading) {
-      loadMoreReviews();
-    }
-  };
+  }, [hasMore, loading, offset, user.user_id, limit]);
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return 'No date';
@@ -189,7 +149,42 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
           {error && reviews.length === 0 && (
             <div className="error-state">
               <p className="error-message">{error}</p>
-              <button onClick={() => window.location.reload()} className="retry-button">
+              <button 
+                onClick={() => {
+                  setReviews([]);
+                  setOffset(0);
+                  setHasMore(true);
+                  setError(null);
+                  
+                  const retryLoad = async () => {
+                    setLoading(true);
+                    try {
+                      const filters = { skip: 0, limit };
+                      const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
+                      
+                      if (Array.isArray(data)) {
+                        setReviews(data);
+                        setOffset(limit);
+                        setHasMore(data.length === limit);
+                        
+                        if (data.length === 0) {
+                          setError('This user has not written any reviews yet.');
+                        }
+                      } else {
+                        setError('Invalid response format from server');
+                      }
+                    } catch (err) {
+                      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+                      setError(`Failed to load reviews: ${errorMessage}`);
+                    } finally {
+                      setLoading(false);
+                    }
+                  };
+                  
+                  retryLoad();
+                }} 
+                className="retry-button"
+              >
                 Try Again
               </button>
             </div>
