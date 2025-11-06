@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { YelpApiService } from '../services/api';
 import { Review, User } from '../types/api';
 
@@ -18,64 +18,71 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
 
   // Note: Removed cacheKey for now since it's not being used in the current implementation
 
-  const loadReviews = useCallback(async (reset = false) => {
-    if (loading) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const currentOffset = reset ? 0 : offset;
-      const filters = { skip: currentOffset, limit };
-      
-      console.log('🔍 Loading reviews for user:', user.user_id, 'with filters:', filters);
-      const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
-      console.log('📊 Received review data:', data);
-      
-      if (Array.isArray(data)) {
-        if (reset) {
-          setReviews(data);
-          setOffset(limit);
-        } else {
-          setReviews(prev => [...prev, ...data]);
-          setOffset(prev => prev + limit);
-        }
-        
-        // Check if we have more reviews to load
-        setHasMore(data.length === limit);
-        
-        if (data.length === 0 && reset) {
-          setError('This user has not written any reviews yet.');
-        }
-      } else {
-        console.error('❌ Invalid data format received:', data);
-        setError('Invalid response format from server');
-        setHasMore(false);
-      }
-    } catch (err) {
-      console.error('❌ Error loading user reviews:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      setError(`Failed to load reviews: ${errorMessage}`);
-    } finally {
-      setLoading(false);
-    }
-  }, [user.user_id, offset, loading, limit]);
-
   // Load reviews when modal opens or user changes
   useEffect(() => {
     if (isOpen && user.user_id) {
+      console.log('🔄 Modal opened for user:', user.user_id);
       setReviews([]);
       setOffset(0);
       setHasMore(true);
-      loadReviews(true);
+      setError(null);
+      
+      // Load initial reviews
+      const loadInitialReviews = async () => {
+        setLoading(true);
+        try {
+          const filters = { skip: 0, limit };
+          console.log('🔍 Loading initial reviews for user:', user.user_id);
+          const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
+          
+          if (Array.isArray(data)) {
+            setReviews(data);
+            setOffset(limit);
+            setHasMore(data.length === limit);
+            
+            if (data.length === 0) {
+              setError('This user has not written any reviews yet.');
+            }
+          } else {
+            console.error('❌ Invalid data format received:', data);
+            setError('Invalid response format from server');
+          }
+        } catch (err) {
+          console.error('❌ Error loading initial reviews:', err);
+          const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+          setError(`Failed to load reviews: ${errorMessage}`);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      loadInitialReviews();
     }
-  }, [isOpen, user.user_id, loadReviews]);
+  }, [isOpen, user.user_id, limit]);
 
-  const loadMoreReviews = useCallback(() => {
-    if (hasMore && !loading) {
-      loadReviews(false);
+  const loadMoreReviews = useCallback(async () => {
+    if (!hasMore || loading) return;
+    
+    setLoading(true);
+    try {
+      const filters = { skip: offset, limit };
+      console.log('🔍 Loading more reviews with offset:', offset);
+      const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
+      
+      if (Array.isArray(data)) {
+        setReviews(prev => [...prev, ...data]);
+        setOffset(prev => prev + limit);
+        setHasMore(data.length === limit);
+      } else {
+        console.error('❌ Invalid data format for load more:', data);
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error('❌ Error loading more reviews:', err);
+    } finally {
+      setLoading(false);
     }
-  }, [hasMore, loading, loadReviews]);
+  }, [hasMore, loading, offset, user.user_id, limit]);
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return 'No date';
@@ -141,7 +148,42 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
           {error && reviews.length === 0 && (
             <div className="error-state">
               <p className="error-message">{error}</p>
-              <button onClick={() => loadReviews(true)} className="retry-button">
+              <button 
+                onClick={() => {
+                  setReviews([]);
+                  setOffset(0);
+                  setHasMore(true);
+                  setError(null);
+                  
+                  const retryLoad = async () => {
+                    setLoading(true);
+                    try {
+                      const filters = { skip: 0, limit };
+                      const data = await YelpApiService.getReviewsByUser(user.user_id, filters);
+                      
+                      if (Array.isArray(data)) {
+                        setReviews(data);
+                        setOffset(limit);
+                        setHasMore(data.length === limit);
+                        
+                        if (data.length === 0) {
+                          setError('This user has not written any reviews yet.');
+                        }
+                      } else {
+                        setError('Invalid response format from server');
+                      }
+                    } catch (err) {
+                      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+                      setError(`Failed to load reviews: ${errorMessage}`);
+                    } finally {
+                      setLoading(false);
+                    }
+                  };
+                  
+                  retryLoad();
+                }} 
+                className="retry-button"
+              >
                 Try Again
               </button>
             </div>
