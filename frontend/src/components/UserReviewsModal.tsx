@@ -242,7 +242,7 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
           {reviews.length > 0 && hasMore && (
             <div className="load-more-container">
               <button 
-                onClick={handleLoadMore} 
+                onClick={loadMoreReviews} 
                 disabled={loading}
                 className="load-more-button"
               >
