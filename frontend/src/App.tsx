@@ -3,10 +3,9 @@ import BusinessList from './components/BusinessList';
 import ReviewList from './components/ReviewList';
 import UserList from './components/UserList';
 import TipList from './components/TipList';
-import ApiTest from './components/ApiTest';
 import './App.css';
 
-type TabType = 'businesses' | 'reviews' | 'users' | 'tips' | 'api-test';
+type TabType = 'businesses' | 'reviews' | 'users' | 'tips';
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('businesses');
@@ -40,12 +39,6 @@ function App() {
           >
             Tips
           </button>
-          <button 
-            className={activeTab === 'api-test' ? 'active' : ''}
-            onClick={() => setActiveTab('api-test')}
-          >
-            🧪 API Test
-          </button>
         </nav>
       </header>
 
@@ -54,7 +47,6 @@ function App() {
         {activeTab === 'reviews' && <ReviewList />}
         {activeTab === 'users' && <UserList />}
         {activeTab === 'tips' && <TipList />}
-        {activeTab === 'api-test' && <ApiTest />}
       </main>
 
       <footer className="App-footer">
