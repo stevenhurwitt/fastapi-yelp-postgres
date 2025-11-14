@@ -108,7 +108,7 @@ const UserReviewsModal: React.FC<UserReviewsModalProps> = ({ isOpen, onClose, us
         <div className="modal-header">
           <h2>
             {user.name ? `${user.name}'s Reviews` : `User Reviews`}
-            <span className="review-count">({user.review_count || 0} total)</span>
+            <span className="review-count">({reviews.length} loaded{!hasMore ? ' total' : ''})</span>
           </h2>
           <button className="modal-close" onClick={onClose} aria-label="Close modal">
             ✕
