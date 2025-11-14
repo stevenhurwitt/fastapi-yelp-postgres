@@ -2,27 +2,27 @@ version: '3.8'
 services:
   web:
     build: .
-    ports:
-      - "8000:8000"
     environment:
-      - DATABASE_HOST=${DATABASE_HOST}
-      - DATABASE_PORT=${DATABASE_PORT}
-      - DATABASE_NAME=${DATABASE_NAME}
-      - DATABASE_USER=${DATABASE_USER}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
-    depends_on:
-      - db
-  
-  db:
-    image: postgres:15
-    environment:
-      - POSTGRES_DB=${DATABASE_NAME}
-      - POSTGRES_USER=${DATABASE_USER}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-    ports:
-      - "5432:5432"
+      - DATABASE_HOST=localhost
+      - DATABASE_PORT=5433
+      - DATABASE_NAME=steven
+      - DATABASE_USER=steven
+      - DATABASE_PASSWORD=Secret!1234
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - DEBUG=true
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - .:/app
+    restart: unless-stopped
+    network_mode: host
 
-volumes:
-  postgres_data:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      - web

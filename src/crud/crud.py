@@ -120,10 +120,10 @@ def get_reviews_by_user_with_names(db: Session, user_id: str, skip: int = 0, lim
         models.Review.month,
         models.User.name.label('user_name'),
         models.Business.name.label('business_name')
-    ).join(
-        models.User, models.Review.user_id == models.User.user_id, isouter=True
-    ).join(
-        models.Business, models.Review.business_id == models.Business.business_id, isouter=True
+    ).outerjoin(
+        models.User, models.Review.user_id == models.User.user_id
+    ).outerjoin(
+        models.Business, models.Review.business_id == models.Business.business_id
     ).filter(models.Review.user_id == user_id).offset(skip).limit(limit).all()
 
 # User CRUD operations
