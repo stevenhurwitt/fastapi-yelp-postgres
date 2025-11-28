@@ -11,13 +11,15 @@ def get_business(db: Session, business_id: str) -> Optional[models.Business]:
     return db.query(models.Business).filter(models.Business.business_id == business_id).first()
 
 def get_businesses_by_city(db: Session, city: str, skip: int = 0, limit: int = 100) -> List[models.Business]:
-    return db.query(models.Business).filter(models.Business.city == city).offset(skip).limit(limit).all()
+    """Get businesses by city (case-insensitive)"""
+    return db.query(models.Business).filter(models.Business.city.ilike(city)).offset(skip).limit(limit).all()
 
 def get_businesses_by_stars(db: Session, min_stars: float, skip: int = 0, limit: int = 100) -> List[models.Business]:
     return db.query(models.Business).filter(models.Business.stars >= min_stars).offset(skip).limit(limit).all()
 
 def get_businesses_by_state(db: Session, state: str, skip: int = 0, limit: int = 100) -> List[models.Business]:
-    return db.query(models.Business).filter(models.Business.state == state).offset(skip).limit(limit).all()
+    """Get businesses by state (case-insensitive)"""
+    return db.query(models.Business).filter(models.Business.state.ilike(state)).offset(skip).limit(limit).all()
 
 def get_businesses_by_name(db: Session, name: str, skip: int = 0, limit: int = 100) -> List[models.Business]:
     """Search businesses by name (case-insensitive partial match)"""

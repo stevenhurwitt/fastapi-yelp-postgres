@@ -32,7 +32,7 @@ def read_business(business_id: str, db: Session = Depends(get_db)):
 
 @router.get("/city/{city}", response_model=List[schemas.Business])
 def read_businesses_by_city(city: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    """Get businesses by city"""
+    """Get businesses by city (case-insensitive)"""
     businesses = crud.get_businesses_by_city(db, city=city, skip=skip, limit=limit)
     return businesses
 
@@ -44,7 +44,7 @@ def read_businesses_by_stars(min_stars: float, skip: int = 0, limit: int = 100, 
 
 @router.get("/state/{state}", response_model=List[schemas.Business])
 def read_businesses_by_state(state: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    """Get businesses by state"""
+    """Get businesses by state (case-insensitive)"""
     businesses = crud.get_businesses_by_state(db, state=state, skip=skip, limit=limit)
     return businesses
 
