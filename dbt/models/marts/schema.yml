@@ -1,0 +1,79 @@
+version: 2
+
+models:
+  - name: business_analytics
+    description: >
+      Comprehensive business analytics combining data from reviews, tips, and checkins.
+      This mart provides a complete view of business performance and engagement.
+    columns:
+      - name: business_id
+        description: Unique business identifier
+        tests:
+          - unique
+          - not_null
+      - name: business_tier
+        description: Categorization of business based on review volume and rating
+        tests:
+          - accepted_values:
+              values: ['High Rated', 'Low Rated', 'Average Rated', 'Limited Reviews', 'No Reviews']
+      - name: calculated_avg_rating
+        description: Calculated average rating from actual reviews
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0 and <= 5"
+      - name: positive_review_percentage
+        description: Percentage of reviews that are positive (4-5 stars)
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0 and <= 100"
+
+  - name: user_insights
+    description: >
+      Comprehensive user behavior and engagement metrics.
+      Analyzes review patterns, activity levels, and user engagement.
+    columns:
+      - name: user_id
+        description: Unique user identifier
+        tests:
+          - unique
+          - not_null
+      - name: user_tier
+        description: User categorization based on activity level
+        tests:
+          - accepted_values:
+              values: ['Elite Power User', 'Power User', 'Active User', 'Casual User', 'Inactive User']
+      - name: engagement_score
+        description: Weighted score combining reviews, tips, fans, and elite status
+      - name: positivity_percentage
+        description: Percentage of reviews written that are positive
+
+  - name: review_trends
+    description: >
+      Time-series analysis of review patterns by month and location.
+      Useful for identifying trends and seasonal patterns.
+    columns:
+      - name: month
+        description: Month of reviews (first day of month)
+        tests:
+          - not_null
+      - name: city
+        description: City where businesses are located
+        tests:
+          - not_null
+      - name: review_count
+        description: Total number of reviews in the month
+
+  - name: category_analytics
+    description: >
+      Performance metrics aggregated by business category.
+      Shows which categories perform best in different locations.
+    columns:
+      - name: category
+        description: Business category
+        tests:
+          - not_null
+      - name: businesses_in_category
+        description: Number of businesses in this category
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "> 0"

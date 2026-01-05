@@ -7,3 +7,7 @@ pydantic-settings
 python-multipart
 mangum
 boto3
+
+# dbt for data transformations and analytics
+dbt-core>=1.7.0
+dbt-postgres>=1.7.0

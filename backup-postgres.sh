@@ -57,6 +57,9 @@ echo -e "${GREEN}✅ Database connection successful${NC}"
 echo -e "${YELLOW}💾 Creating database backup...${NC}"
 echo "Backup file: $BACKUP_FILE"
 
+# Create a temporary file in /tmp first (to avoid permission issues)
+TEMP_BACKUP="/tmp/postgres_backup_${TIMESTAMP}.sql"
+
 # Use pg_dump inside the container to create a complete backup
 docker exec "$CONTAINER_NAME" pg_dump \
     -U "$DB_USER" \
@@ -67,7 +70,13 @@ docker exec "$CONTAINER_NAME" pg_dump \
     --create \
     --format=plain \
     --no-owner \
-    --no-privileges > "$BACKUP_FILE"
+    --no-privileges > "$TEMP_BACKUP"
+
+# Move the temporary file to the final location
+if [ -s "$TEMP_BACKUP" ]; then
+    sudo mv "$TEMP_BACKUP" "$BACKUP_FILE"
+    sudo chmod 644 "$BACKUP_FILE"
+fi
 
 # Check if backup was successful
 if [ $? -eq 0 ] && [ -s "$BACKUP_FILE" ]; then

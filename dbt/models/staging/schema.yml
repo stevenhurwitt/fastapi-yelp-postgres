@@ -1,0 +1,93 @@
+version: 2
+
+sources:
+  - name: yelp
+    description: Raw Yelp dataset tables
+    schema: public
+    tables:
+      - name: business
+        description: Business information from Yelp dataset
+        columns:
+          - name: business_id
+            description: Unique business identifier
+            tests:
+              - unique
+              - not_null
+      
+      - name: reviews
+        description: User reviews for businesses
+        columns:
+          - name: review_id
+            description: Unique review identifier
+            tests:
+              - unique
+              - not_null
+          - name: user_id
+            description: User who wrote the review
+            tests:
+              - not_null
+          - name: business_id
+            description: Business being reviewed
+            tests:
+              - not_null
+      
+      - name: yelp_users
+        description: Yelp user profiles
+        columns:
+          - name: user_id
+            description: Unique user identifier
+            tests:
+              - unique
+              - not_null
+      
+      - name: tips
+        description: Short tips from users about businesses
+        columns:
+          - name: user_id
+            tests:
+              - not_null
+          - name: business_id
+            tests:
+              - not_null
+      
+      - name: checkins
+        description: Check-in data for businesses
+        columns:
+          - name: business_id
+            tests:
+              - not_null
+
+models:
+  - name: stg_businesses
+    description: Cleaned and standardized business data
+    columns:
+      - name: business_id
+        description: Unique business identifier
+        tests:
+          - unique
+          - not_null
+      - name: stars
+        description: Average star rating
+        tests:
+          - accepted_values:
+              values: [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+  
+  - name: stg_reviews
+    description: Cleaned review data with sentiment analysis
+    columns:
+      - name: review_id
+        tests:
+          - unique
+          - not_null
+      - name: sentiment
+        tests:
+          - accepted_values:
+              values: ['positive', 'neutral', 'negative']
+  
+  - name: stg_users
+    description: Cleaned user profile data
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
