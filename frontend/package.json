@@ -40,6 +40,11 @@
   },
   "proxy": "http://192.168.0.123:8000",
   "devDependencies": {
-    "serve": "^14.2.5"
+    "serve": "^14.2.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/user-event": "^13.5.0",
+    "msw": "^0.49.3",
+    "jest-mock-axios": "^4.6.1"
   }
 }
