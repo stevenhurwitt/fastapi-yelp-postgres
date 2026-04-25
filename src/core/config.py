@@ -5,9 +5,9 @@ class Settings(BaseSettings):
     # Database settings
     database_host: str = "localhost"
     database_port: int = 5433
-    database_user: str = "postgres"
-    database_password: str = ""
-    database_name: str = "postgres"
+    database_user: str = "steven"
+    database_password: str = "Secret!1234"
+    database_name: str = "steven"
     
     # API settings
     api_title: str = "Yelp Data API"
